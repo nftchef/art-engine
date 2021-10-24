@@ -18,6 +18,7 @@ const {
   layersDir,
   format,
   baseUri,
+  baseExternalUrl,
   description,
   background,
   uniqueDnaTorrance,
@@ -91,7 +92,7 @@ const getElements = (path, layer) => {
       const extension = /\.[0-9a-zA-Z]+$/;
       const sublayer = !extension.test(i);
       const weight = getRarityWeight(i);
-
+    
       const blendMode = layer.blend != undefined ? layer.blend : "source-over";
       const opacity = layer.opacity != undefined ? layer.opacity : 1;
 
@@ -186,8 +187,15 @@ const drawBackground = () => {
 
 const addMetadata = (_dna, _edition, _prefixData) => {
   let dateTime = Date.now();
-  const { _prefix, _offset, _imageHash } = _prefixData;
-
+  const { 
+    _descriptionOverwrite,
+    _prependNameInDescription,
+    _prefix, 
+    _offset, 
+    _suffix,
+    _imageHash 
+  } = _prefixData;
+  
   const combinedAttrs = [...attributesList, ...extraAttributes()];
   const cleanedAttrs = combinedAttrs.reduce((acc, current) => {
     const x = acc.find((item) => item.trait_type === current.trait_type);
@@ -200,9 +208,18 @@ const addMetadata = (_dna, _edition, _prefixData) => {
 
   let tempMetadata = {
     dna: hash(_dna),
-    name: `${_prefix ? _prefix + " " : ""}#${_edition - _offset}`,
-    description: description,
+    
+    // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2". - BB
+    name: `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}`, 
+    
+    // new description builder, it can prepends the asset name, AND overwrite the description for different layerConfigs. Can form unique descriptions like; "Item #10 is an art piece from Collection X". - BB
+    description: `${_prependNameInDescription ? `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}` : ""}${_descriptionOverwrite ? _descriptionOverwrite : description}`, 
+
+    // Adds external_url if the baseExternalUrl in config is not empty, combines it with edition numbers. - BB
+    ...(baseExternalUrl !== "" && { external_url: `${baseExternalUrl}${_edition}` }), 
+
     image: `${baseUri}/${_edition}${outputJPEG ? ".jpg" : ".png"}`,
+    
     ...(hashImages === true && { imageHash: _imageHash }),
     edition: _edition,
     date: dateTime,
@@ -542,11 +559,22 @@ const startCreating = async () => {
             }`
           );
           const _imageHash = hash(savedFile);
+
+          // if there's a descriptionOverwrite for the current layerConfig, then
+          // use that description in the assets - BB
+          const _descriptionOverwrite = layerConfigurations[layerConfigIndex].descriptionOverwrite
+            ? layerConfigurations[layerConfigIndex].descriptionOverwrite
+            : null;
+
+          // prependNameInDescription - BB
+          const _prependNameInDescription = layerConfigurations[layerConfigIndex].prependNameInDescription;
+
           // if there's a prefix for the current configIndex, then
           // start count back at 1 for the name, only.
           const _prefix = layerConfigurations[layerConfigIndex].namePrefix
             ? layerConfigurations[layerConfigIndex].namePrefix
             : null;
+
           // if resetNameIndex is turned on, calculate the offset and send it
           // with the prefix
           let _offset = 0;
@@ -559,9 +587,20 @@ const startCreating = async () => {
               return acc;
             }, 0);
           }
+
+          // if there's a suffix for the current configIndex, then
+          // add it after the counter number
+          // if resetNameIndex is on too, the resetted counter will be added after the suffix
+          const _suffix = layerConfigurations[layerConfigIndex].nameSuffix
+            ? layerConfigurations[layerConfigIndex].nameSuffix
+            : null;
+
           addMetadata(newDna, abstractedIndexes[0], {
+            _descriptionOverwrite, // BB
+            _prependNameInDescription, // BB
             _prefix,
             _offset,
+            _suffix,
             _imageHash,
           });
 
