@@ -9,21 +9,28 @@ const buildDir = path.join(basePath, "/build");
 const layersDir = path.join(basePath, "/layers");
 
 const description =
-  "This is the description of your NFT project, remember to replace this";
+  "Default Description";
 const baseUri = "ipfs://NewUriToReplace";
+
+const baseExternalUrl = "https://test.com/collection?asset="; //Base url for extelnal link under the image on OpenSea. The edition number will be appended. Leave empty "" to remove. - BB
 
 const outputJPEG = false; // if false, the generator outputs png's
 
 // if you use an empty/transparent file, set the name here.
 const emptyLayerName = "NONE";
 
-//IF you need a provenance hash, turn this on
+//IF you need a provenance hash, turn this on 
 const hashImages = true;
 
 const layerConfigurations = [
+
   {
-    growEditionSizeTo: 11,
-    // namePrefix: "Monkey", Use to add a name to Metadata `name:`
+    growEditionSizeTo: 10,
+    descriptionOverwrite: " with Unique Description For Layer Set A", // for layerSet spesific descriptions. Here, it is written in a way to suit the names that will be prepended.
+    prependNameInDescription: true, // add/prepend asset name to the description. - BB
+    namePrefix: "Monkey",
+    resetNameIndex: true, // this will start the count at #1 for this layerconfig
+    nameSuffix: "Set A", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
     layersOrder: [
       { name: "Back Accessory" },
       { name: "Head" },
@@ -34,19 +41,28 @@ const layerConfigurations = [
       { name: "Shirt Accessories" },
     ],
   },
-  // {
-  //   growEditionSizeTo: 10,
-  //   namePrefix: "Lion",
-  //   resetNameIndex: true, // this will start the Lion count at #1 instead of #6
-  //   layersOrder: [
-  //     { name: "Background" },
-  //     { name: "Hats" },
-  //     { name: "Male Hair" },
-  //   ],
-  // },
+  
+  {
+    growEditionSizeTo: 20,
+    descriptionOverwrite: " with Unique Description For Layer Set A", // for layerSet spesific descriptions. Here, it is written in a way to suit the names that will be prepended.
+    prependNameInDescription: true, // add/prepend asset name to the description. - BB
+    namePrefix: "Monkey",
+    resetNameIndex: true, // this will start the count at #1 for this layerconfig
+    nameSuffix: "Set B", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
+    layersOrder: [
+      { name: "Back Accessory" },
+      { name: "Head" },
+      { name: "Clothes" },
+      { name: "Eyes" },
+      { name: "Hair" },
+      { name: "Head Accessory" },
+      { name: "Shirt Accessories" },
+    ],
+  },
 ];
 
-/**
+
+/** 
  * Incompatible items can be added to this object by a files cleanName
  * This works in layer order, meaning, you need to define the layer that comes
  * first as the Key, and the incompatible items that _may_ come after.
@@ -59,7 +75,8 @@ const incompatible = {
   //   White: ["rare-Pink-Pompadour"],
 };
 
-/**
+
+/** 
  * Require combinations of files when constructing DNA, this bypasses the
  * randomization and weights.
  *
@@ -68,8 +85,10 @@ const incompatible = {
  * the items in the array are "required" items that should be pulled from folders
  * further in the stack
  */
+
 const forcedCombinations = {
-  floral: ["MetallicShades", "Golden Sakura"],
+  //    Force some layers if a certain layer is used.
+  //floral: ["MetallicShades", "Golden Sakura"],
 };
 
 const shuffleLayerConfigurations = false;
@@ -86,31 +105,56 @@ const background = {
   brightness: "80%",
 };
 
-const extraMetadata = {};
+const extraMetadata = {
+  // You can add extra info for your collection here. Such as the artist name.
+  "Artist": "A person",
+};
 
 const extraAttributes = () => [
+
+  //OpenSea Trait Types for rich data = https://docs.opensea.io/docs/metadata-standards
+  //These are just examples to show dynamic uses. Delete all these if they do not fiy in your project. 
+  {
+    display_type: "boost_percentage", // Boost trait with lightning icon. Number is shown with a % sign. Circle fill by the percentage.
+    trait_type: "Health",
+    value: Math.floor(Math.random() * 100),
+  },
+  {
+    display_type: "boost_number", // Boost trait with lightning icon. Number is shown with a + sign. Circle is filled.
+    trait_type: "Energy",
+    value: Math.floor(Math.random() * 100),
+  },
+  {
+    display_type: "number", // Appears in the "Stats" area with a large number. "Out of X" value is taken from the collection.
+    trait_type: "Mana",
+    value: Math.floor(Math.random() * 100),
+  },
+  {
+    //Integer value with no display_type set makes the trait appear in the "Rankings" area with a progress bar. Max value is taken from the collection.
+    trait_type: "Rank", 
+    value: Math.floor(Math.random() * 100),
+  },
+
+  {
+    //display_type date makes a date section appear in the right column near "Rankings" and "Stats."
+    display_type: "date", 
+    trait_type: "Birthday", 
+
+    // Give a random date between;
+	  // Unix Timestamp 1609455600 (GMT Thu Dec 31 2020 23:00:00 GMT+0000) and
+	  // Unix Timestamp 631148400 (GMT Sun Dec 31 1989 23:00:00 GMT+0000)
+	  value: (Math.floor( Math.random() * (1609455634 - 631148434) ) + 631148434)
+  },
+
+  {
+    //String value with no display_type set makes the trait appear in the "Properties" area like layers.
+    trait_type: "Familly",
+    value: `Familly #${ Math.floor(Math.random() * (6 - 1 + 1) ) + 1 }`, // Math.floor(Math.random() * (max - min + 1) ) + min; // min max included
+  }
+
   // Optionally, if you need to overwrite one of your layers attributes.
   // You can include the same name as the layer, here, and it will overwrite
-  //
-  // {
-  // trait_type: "Bottom lid",
-  //   value: ` Bottom lid # ${Math.random() * 100}`,
-  // },
-  // {
-  //   display_type: "boost_number",
-  //   trait_type: "Aqua Power",
-  //   value: Math.random() * 100,
-  // },
-  // {
-  //   display_type: "boost_number",
-  //   trait_type: "Health",
-  //   value: Math.random() * 100,
-  // },
-  // {
-  //   display_type: "boost_number",
-  //   trait_type: "Mana",
-  //   value: Math.floor(Math.random() * 100),
-  // },
+
 ];
 
 const rarityDelimiter = "#";
@@ -129,6 +173,7 @@ module.exports = {
   layersDir,
   format,
   baseUri,
+  baseExternalUrl,
   description,
   background,
   uniqueDnaTorrance,
