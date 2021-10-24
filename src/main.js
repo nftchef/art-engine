@@ -553,7 +553,7 @@ const startCreating = async () => {
           if (layerConfigurations[layerConfigIndex].resetNameIndex) {
             _offset = layerConfigurations.reduce((acc, layer, index) => {
               if (index < layerConfigIndex) {
-                acc += layer.growEditionSizeTo;
+                acc = layer.growEditionSizeTo;
                 return acc;
               }
               return acc;
