@@ -30,6 +30,7 @@ const {
   extraMetadata,
   incompatible,
   forcedCombinations,
+  traitValueOverrides,
   outputJPEG,
   emptyLayerName,
   hashImages,
@@ -132,7 +133,9 @@ const getElements = (path, layer) => {
           ? layer.trait
           : lineage[lineage.length - typeAncestor];
 
-      element.traitValue = getTraitValueFromPath(element, lineage);
+      const rawTrait = getTraitValueFromPath(element, lineage);
+      const trait = processTraitOverrides(rawTrait);
+      element.traitValue = trait;
 
       return element;
     });
@@ -147,6 +150,15 @@ const getTraitValueFromPath = (element, lineage) => {
     // if the element is a png that is required, get the traitValue from the parent Dir
     return element.sublayer ? true : cleanName(lineage[lineage.length - 2]);
   }
+};
+
+/**
+ * Checks the override object for trait overrides
+ * @param {String} trait The default trait value from the path-name
+ * @returns String trait of either overridden value of raw default.
+ */
+const processTraitOverrides = (trait) => {
+  return traitValueOverrides[trait] ? traitValueOverrides[trait] : trait;
 };
 
 const layersSetup = (layersOrder) => {
@@ -339,6 +351,16 @@ function pickRandomElement(
     return dnaSequence.push(dnaString);
   }
 
+  if (incompatibleDNA.includes(layer.name) && layer.sublayer) {
+    debugLogs
+      ? console.log(
+          `Skipping incompatible sublayer directory, ${layer.name}`,
+          layer.name
+        )
+      : null;
+    return dnaSequence;
+  }
+
   const compatibleLayers = layer.elements.filter(
     (layer) => !incompatibleDNA.includes(layer.name)
   );
@@ -469,6 +491,10 @@ const createDna = (_layers) => {
 
 const writeMetaData = (_data) => {
   fs.writeFileSync(`${buildDir}/json/_metadata.json`, _data);
+};
+
+const writeDnaLog = (_data) => {
+  fs.writeFileSync(`${buildDir}/_dna.json`, _data);
 };
 
 const saveMetaDataSingleFile = (_editionCount) => {
@@ -628,6 +654,7 @@ const startCreating = async () => {
     layerConfigIndex++;
   }
   writeMetaData(JSON.stringify(metadataList, null, 2));
+  writeDnaLog(JSON.stringify(dnaList, null, 2));
 };
 
-module.exports = { startCreating, buildSetup, getElements };
+module.exports = { startCreating, buildSetup, getElements, layersSetup };

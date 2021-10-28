@@ -2,20 +2,29 @@ This repository is a fork from the original Hashlips generator and makes a coupl
 
 # Additional Features in this fork
 
+## Nested Structures
+
 - [Nested Layer Support and Trait Type definition modification/branch](#nested-layer-support-and-trait-type-definition-modification-branch)
   - [Example](#example)
   - [Nesting structure](#nesting-structure)
     - [Advanced options](#advanced-options)
       - [Required files](#required-files)
 - [Metadata Name + Number](#name---number-prefix-and-reset-for-configuration-sets)
+
+## Options and conditional output
+
 - [Chance of "NONE" or skipping a trait](#Chance-of-"NONE"-or-skipping-a-trait)
 - [Flagging Incompatible layers](#flagging-incompatible-layers)
-- [🧪 BETA: Forced Combinations](#beta:-forced-combinations)
+- [Forced Combinations](#forced-combinations)
 - [Output Files as JPEG](#outputting-jpegs)
-- [ Metadata Display Types and Overrides](#metadata-display-types-and-overrides)
+- [ Attribute Display Types and Overrides](#attribute-display-types-and-overrides)
+- [ Trait Value Overrides](#trait-value-overrides)
+
+## Utils
+
 - [Provenance Hash Generation](#provenance-hash-generation)
 - [UTIL: Remove traits from Metadata](#Remove-Trait-Util)
-- [Breaking Changes](#breaking-changes)
+- [Randomly Insert Rare items - Replace Util](#Randomly-Insert-Rare-items---Replace-Util)
 - [Incompatibilities with original Hashlips](#incompatibilities)
 
 ## 🙇🙇🙇 You can find me on twitter or Discord,
@@ -153,7 +162,7 @@ const incompatible = {
 
 ⚠️ NOTE: This relies on the layer order to set incompatible DNA sets. For example the key should be the image/layer that comes first (from top to bottom) in the layerConfiguration. in other words, IF the item (KEY) is chosen, then, the generator will know not to pick any of the items in the `[Array]` that it lists.
 
-# BETA: Forced Combinations
+# Forced Combinations
 
 ![10](https://user-images.githubusercontent.com/91582112/138395427-c8642f74-58d1-408b-94d1-7a97dda58d1a.jpg)
 
@@ -224,6 +233,27 @@ _Be sure to pass in a randomization function here, otherwise every json file wil
 
 This also supports overwriting a trait normally assigned by the layer Name/folder and file name. If you'd like to overwrite it with some other value, adding the _same_ trait in `extraMetadata` will overwrite the default trait/value in the generated metadata.
 
+# Trait Value Overrides
+
+🧪 BETA FEATURE
+
+When you need to override the `trait_value` generated in the metadata.
+
+By default trait values come from the file name _or_ subfolder that is _chosen_ (the last one in a nested structure with a weight delimiter).
+Because many options require the filenames to be unique, there may be a situation where you need to overwrite the default value. To do this, set the overrides in `config.js`
+
+```js
+/**
+ * In the event that a filename cannot be the trait value name, for example when
+ * multiple items should have the same value, specify
+ * clean-filename: trait-value override pairs. Wrap filenames with spaces in quotes.
+ */
+const traitValueOverrides = {
+  Helmet: "Space Helmet",
+  "gold chain": "GOLDEN NECKLACE",
+};
+```
+
 # Provenance Hash Generation
 
 If you need to generate a provenance hash (and, yes, you should, [read about it here](https://medium.com/coinmonks/the-elegance-of-the-nft-provenance-hash-solution-823b39f99473) ), make sure the following in config.js is set to `true`
@@ -244,12 +274,9 @@ run the following util
   node utils/provenance.js
 ```
 
-\*Note, if you regenerate the images, **You will also need to regenerate this hash**. Save the hash and add it to your contract.
+**The Provenance information is saved** to the build directory in `_prevenance.json`. This file contains the final hash as well as the (long) concatednated hash string.
 
-# incompatibilities
-
-⚠️ Layer names are for example purposes only, the generator will generate proper, example metadata, _but the images generated will be ugly_
-⚠️ `extraMetadata` has been repurposed for adding _additional_ attributes. If you need to have extra data aded to the top portion of the metadata, please reach out.
+\*Note, if you regenerate the images, **You will also need to regenerate this hash**.
 
 # Remove Trait Util
 
@@ -265,13 +292,99 @@ If you would like to print additional logging, use the `-d` flag
 node utils/removeTrait.js "Background" -d
 ```
 
+# Randomly Insert Rare items - Replace Util
+
+If you would like to manually add 'hand drawn' or unique versions into the pool of generated items, this utility takes a source folder (of your new artwork) and inserts it into the `build` directory, assigning them to random id's.
+
+## Requirements
+
+- create a source directory with an images and json folder (any name, you will specify later)
+- Name images sequentially from 1.png/jpeg (order does not matter) and place in the images folder.
+- Put matching, sequential json files in the json folder
+
+example:
+
+```
+├── ultraRares
+│   ├── images
+│   │   ├── 1.png
+│   │   └── 2.png
+│   └── json
+│       ├── 1.json
+│       └── 2.json
+```
+
+**You must have matching json files for each of your images.**
+
+## Setting up the JSON.
+
+Because this script randomizes which tokens to replace/place, _it is important_ to update the metadata properly with the resulting tokenId #.
+
+**_Everywhere_ you need the edition number in the metadata should use the `##` identifier.**
+
+```json
+  "edition": "##",
+```
+
+**Don't forget the image URI!**
+
+```json
+  "name": "## super rare sunburn ",
+  "image": "ipfs://NewUriToReplace/##.png",
+  "edition": "##",
+```
+
+## Running
+
+Run the script with the following command, passing in the source directory name, (relateive to the current working dir)
+
+```sh
+node utils/replace.js [Source Directory]
+```
+
+example
+
+```sh
+node utils/replace.js ./ultraRares
+```
+
+## Flags
+
+### `--help`
+
+Outputs command help.
+
+### `--Debug`
+
+`-d` outputs additional logging information
+
+### `--identifier` <identifier>
+
+`-i` Change the default object identifier/location for the edition/id number. defaults to "edition". This is used when the metadata object does not have "edition" in the top level, but may have it nested in "properties", for example, in which case you can use the following to locate the proper item in \_metadata.json
+
+```
+node utils/replace.js ./ultraRares -i properties.edition
+```
+
+⚠️ This step should be done BEFORE generating a provenance hash. Each new, replaced image generates a new hash and is inserted into the metadata used for generating the provenance hash.
+
+⚠️ This util requires the `build` directory to be complete (after generation)
+
+<hr />
+
+# incompatibilities
+
+⚠️ This was forked originally from hashlips 1.0.6 and may have different syntax/options. Be sure to read this readme for how to use each feature in _this_ branch.
+
 ### Example:
 
 For example, if you are using a `Backgrounds` layer and would prefer to remove that as a trait from the generated json,
 First, generate the images and json as usual, then, running the remove trait util
 
 ```
+
 node utils/removeTrait.js "Background"
+
 ```
 
 Will remove the background trait from all metadata files.
@@ -291,3 +404,7 @@ Will remove the background trait from all metadata files.
 
 This is fork/combination of the original hashlips generator, for basic configuration
 Check the [Basic Configuration readme](BASIC-README.md)
+
+```
+
+```
