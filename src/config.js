@@ -9,7 +9,7 @@ const buildDir = path.join(basePath, "/build");
 const layersDir = path.join(basePath, "/layers");
 
 const description =
-  "Default Description";
+  "This is the description of your NFT project, remember to replace this";
 const baseUri = "ipfs://NewUriToReplace";
 
 const baseExternalUrl = "https://test.com/collection?asset="; //Base url for extelnal link under the image on OpenSea. The edition number will be appended. Leave empty "" to remove. - BB
@@ -25,12 +25,11 @@ const hashImages = true;
 const layerConfigurations = [
 
   {
-    growEditionSizeTo: 10,
-    descriptionOverwrite: " with Unique Description For Layer Set A", // for layerSet spesific descriptions. Here, it is written in a way to suit the names that will be prepended.
-    prependNameInDescription: true, // add/prepend asset name to the description. - BB
+    growEditionSizeTo: 5,
     namePrefix: "Monkey",
     resetNameIndex: true, // this will start the count at #1 for this layerconfig
     nameSuffix: "Set A", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
+    descriptionOverwrite: "{name} with Unique Description For Layer Set A", // LayerConfig spesific descriptions. Use {name} to embed asset names.
     layersOrder: [
       { name: "Back Accessory" },
       { name: "Head" },
@@ -43,12 +42,12 @@ const layerConfigurations = [
   },
   
   {
-    growEditionSizeTo: 20,
-    descriptionOverwrite: " with Unique Description For Layer Set A", // for layerSet spesific descriptions. Here, it is written in a way to suit the names that will be prepended.
-    prependNameInDescription: true, // add/prepend asset name to the description. - BB
+    growEditionSizeTo: 10,
     namePrefix: "Monkey",
-    resetNameIndex: true, // this will start the count at #1 for this layerconfig
+    resetNameIndex: false, // this will start the count at #1 for this layerconfig
     nameSuffix: "Set B", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
+    descriptionOverwrite: "Description for {name} from Layer Set B", // LayerConfig spesific descriptions. Use {name} to embed asset names.
+    
     layersOrder: [
       { name: "Back Accessory" },
       { name: "Head" },
@@ -121,50 +120,28 @@ const extraMetadata = {
 };
 
 const extraAttributes = () => [
-
-  //OpenSea Trait Types for rich data = https://docs.opensea.io/docs/metadata-standards
-  //These are just examples to show dynamic uses. Delete all these if they do not fiy in your project. 
-  {
-    display_type: "boost_percentage", // Boost trait with lightning icon. Number is shown with a % sign. Circle fill by the percentage.
-    trait_type: "Health",
-    value: Math.floor(Math.random() * 100),
-  },
-  {
-    display_type: "boost_number", // Boost trait with lightning icon. Number is shown with a + sign. Circle is filled.
-    trait_type: "Energy",
-    value: Math.floor(Math.random() * 100),
-  },
-  {
-    display_type: "number", // Appears in the "Stats" area with a large number. "Out of X" value is taken from the collection.
-    trait_type: "Mana",
-    value: Math.floor(Math.random() * 100),
-  },
-  {
-    //Integer value with no display_type set makes the trait appear in the "Rankings" area with a progress bar. Max value is taken from the collection.
-    trait_type: "Rank", 
-    value: Math.floor(Math.random() * 100),
-  },
-
-  {
-    //display_type date makes a date section appear in the right column near "Rankings" and "Stats."
-    display_type: "date", 
-    trait_type: "Birthday", 
-
-    // Give a random date between;
-	  // Unix Timestamp 1609455600 (GMT Thu Dec 31 2020 23:00:00 GMT+0000) and
-	  // Unix Timestamp 631148400 (GMT Sun Dec 31 1989 23:00:00 GMT+0000)
-	  value: (Math.floor( Math.random() * (1609455634 - 631148434) ) + 631148434)
-  },
-
-  {
-    //String value with no display_type set makes the trait appear in the "Properties" area like layers.
-    trait_type: "Familly",
-    value: `Familly #${ Math.floor(Math.random() * (6 - 1 + 1) ) + 1 }`, // Math.floor(Math.random() * (max - min + 1) ) + min; // min max included
-  }
-
   // Optionally, if you need to overwrite one of your layers attributes.
   // You can include the same name as the layer, here, and it will overwrite
-
+  //
+  // {
+  // trait_type: "Bottom lid",
+  //   value: ` Bottom lid # ${Math.random() * 100}`,
+  // },
+  // {
+  //   display_type: "boost_number",
+  //   trait_type: "Aqua Power",
+  //   value: Math.random() * 100,
+  // },
+  // {
+  //   display_type: "boost_number",
+  //   trait_type: "Health",
+  //   value: Math.random() * 100,
+  // },
+  // {
+  //   display_type: "boost_number",
+  //   trait_type: "Mana",
+  //   value: Math.floor(Math.random() * 100),
+  // },
 ];
 
 const rarityDelimiter = "#";

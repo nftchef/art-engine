@@ -102,9 +102,9 @@ HAIR
 
 Where the containing folder will define the traits _rarity_ and in the event that it is selected as part of the randomization, BOTH nested images will be included in the final result, in alphabetical oder–hence the 1, 2, numbering.
 
-# Name + Number prefix and reset for configuration sets
+# Name + Number prefix, suffix, and counter reset for configuration sets
 
-If you are using the generator with multiple `layerConfiguration` objects to generate different species/genders/types, it is possible to add a name prefix and a reset counter for the name, so the token names start at `1` for each type.
+If you are using the generator with multiple `layerConfiguration` objects to generate different species/genders/types, it is possible to add a name prefix and a suffix, as well as a reset counter for the names, so the token names start at `1` for each type.
 
 for example, if you are creating multiple animals, and each animal should start with `Animal #1`, but the token numbers should increment as normal, you can use the following `namePrefix` and `resetNameIndex` properties to acheive this.
 
@@ -112,6 +112,9 @@ for example, if you are creating multiple animals, and each animal should start 
     growEditionSizeTo: 10,
     namePrefix: "Lion",
     resetNameIndex: true, // this will start the Lion count at #1 instead of #6
+    nameSuffix: "Set-A", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix
+    descriptionOverwrite: "Unique Description For Layer Set-A which {name} is a member of.", // LayerConfig spesific descriptions. Use {name} to embed asset names.
+    
     layersOrder: [
       { name: "Background" },
       { name: "Eyeball" },
@@ -121,6 +124,14 @@ for example, if you are creating multiple animals, and each animal should start 
 ```
 
 You may choose to omit the `resetNameIndex` or set it to false if you would instead like each layer set to use the token (\_edition) number in the name–it does this by default.
+
+
+If you want each config set to have a sub group name other than the prefix, you can add it with `nameSuffix` property. And form a name like `Animal #5 Monkey`.
+If you use `resetNameIndex: true` propert together with `nameSuffix` property, you the reset counter will be added after the suffix name, and form a name like `Animal #5 - Monkey #3`.
+
+You can also set different descriptions for different layer configuration sets by using `descriptionOverwrite` property. Write a string that will overwrite the default description text only for the current layer set. 
+
+If you want you can embed the generated asset names into the description texts by writing `{name}` in the string and make each description unique. This method works for the default description text too. You can form unique descriptions such as; `Unique Description For Layer Set-A which "Animal #5 - Monkey #3" is a member of.`
 
 # Chance of "NONE" or skipping a trait
 
@@ -290,6 +301,21 @@ If you would like to print additional logging, use the `-d` flag
 
 ```
 node utils/removeTrait.js "Background" -d
+```
+
+# Remove Metadata Content
+
+If you need to remove an unwanted top-level data from json files such as `dna` or `external_url` you can use the `removeMetadataContent` util command.
+Note that, this utility is a bit different than `removeTrait` util, as you can delete a necessary line such as `name` or `image` too. So, use this with caution.  
+
+Use this util by running a command like the following;
+```
+node utils/removeMetadataContent.js "external_url"
+```
+
+If you would like to print additional logging, use the `-d` flag
+```
+node utils/removeMetadataContent.js "external_url" -d
 ```
 
 # Randomly Insert Rare items - Replace Util

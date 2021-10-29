@@ -200,12 +200,9 @@ const drawBackground = () => {
 const addMetadata = (_dna, _edition, _prefixData) => {
   let dateTime = Date.now();
   const { 
-    _descriptionOverwrite,
-    _prependNameInDescription,
-    _prefix, 
-    _offset, 
-    _suffix,
-    _imageHash 
+    _name,
+    _description,
+    _imageHash,
   } = _prefixData;
   
   const combinedAttrs = [...attributesList, ...extraAttributes()];
@@ -221,11 +218,9 @@ const addMetadata = (_dna, _edition, _prefixData) => {
   let tempMetadata = {
     dna: hash(_dna),
     
-    // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2". - BB
-    name: `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}`, 
+    name: _name, 
     
-    // new description builder, it can prepends the asset name, AND overwrite the description for different layerConfigs. Can form unique descriptions like; "Item #10 is an art piece from Collection X". - BB
-    description: `${_prependNameInDescription ? `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}` : ""}${_descriptionOverwrite ? _descriptionOverwrite : description}`, 
+    description: _description, 
 
     // Adds external_url if the baseExternalUrl in config is not empty, combines it with edition numbers. - BB
     ...(baseExternalUrl !== "" && { external_url: `${baseExternalUrl}${_edition}` }), 
@@ -586,15 +581,6 @@ const startCreating = async () => {
           );
           const _imageHash = hash(savedFile);
 
-          // if there's a descriptionOverwrite for the current layerConfig, then
-          // use that description in the assets - BB
-          const _descriptionOverwrite = layerConfigurations[layerConfigIndex].descriptionOverwrite
-            ? layerConfigurations[layerConfigIndex].descriptionOverwrite
-            : null;
-
-          // prependNameInDescription - BB
-          const _prependNameInDescription = layerConfigurations[layerConfigIndex].prependNameInDescription;
-
           // if there's a prefix for the current configIndex, then
           // start count back at 1 for the name, only.
           const _prefix = layerConfigurations[layerConfigIndex].namePrefix
@@ -621,12 +607,21 @@ const startCreating = async () => {
             ? layerConfigurations[layerConfigIndex].nameSuffix
             : null;
 
+
+          // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2". - BB
+          //const _name = `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}`; 
+          const _name = `${_prefix ? `${_prefix} ` : ``}#${_suffix ? abstractedIndexes[0] : abstractedIndexes[0] - _offset}${_suffix ? ` ${_suffix}${layerConfigurations[layerConfigIndex].resetNameIndex ? ` #${abstractedIndexes[0] - _offset}` : ``}` : ``}`;
+          console.log("_offset: "+_offset);
+
+          // New description builder, it can embed the asset name, AND overwrite the description for different layerConfigs. 
+          // Can form unique descriptions like; "Item #10 is an art piece from Collection X".
+          const _description = (layerConfigurations[layerConfigIndex].descriptionOverwrite
+            ? layerConfigurations[layerConfigIndex].descriptionOverwrite
+            : description).replace(/{name}/g, _name);
+            
           addMetadata(newDna, abstractedIndexes[0], {
-            _descriptionOverwrite, // BB
-            _prependNameInDescription, // BB
-            _prefix,
-            _offset,
-            _suffix,
+            _name,
+            _description,
             _imageHash,
           });
 
