@@ -9,7 +9,8 @@ This repository is a fork from the original Hashlips generator and makes a coupl
   - [Nesting structure](#nesting-structure)
     - [Advanced options](#advanced-options)
       - [Required files](#required-files)
-- [Metadata Name + Number](#name---number-prefix-and-reset-for-configuration-sets)
+      - [Sublayer options](#sublayer-options)
+- [Metadata Name + Number](#metadata-name-and-number)
 
 ## Options and conditional output
 
@@ -20,14 +21,28 @@ This repository is a fork from the original Hashlips generator and makes a coupl
 - [ Attribute Display Types and Overrides](#attribute-display-types-and-overrides)
 - [ Trait Value Overrides](#trait-value-overrides)
 
+## Other Blockchains
+
+- [Solana](#solana-metadata)
+- [Cardano](#cardano-metadata)
+
 ## Utils
 
 - [Provenance Hash Generation](#provenance-hash-generation)
 - [UTIL: Remove traits from Metadata](#Remove-Trait-Util)
 - [Randomly Insert Rare items - Replace Util](#Randomly-Insert-Rare-items---Replace-Util)
+
+### Notes
+
 - [Incompatibilities with original Hashlips](#incompatibilities)
 
-## 🙇🙇🙇 You can find me on twitter or Discord,
+<br/>
+<br/>
+<br/>
+
+# 🙇🙇🙇
+
+## You can find me on twitter or Discord,
 
 - Twitter: https://twitter.com/nftchef
 - Discord genkihagata#3074
@@ -36,7 +51,9 @@ This repository is a fork from the original Hashlips generator and makes a coupl
 ❤️ no need to send anything, however, many of you asked for my wallet address 🙇:
 `0xeB23ecf1fa9911fca08ecAbe83d426b6bd525bB0`
 
-🙇🙇🙇
+<hr/>
+<br/>
+<br/>
 
 # Nested Layer Support and Trait Type definition modification/branch
 
@@ -102,7 +119,29 @@ HAIR
 
 Where the containing folder will define the traits _rarity_ and in the event that it is selected as part of the randomization, BOTH nested images will be included in the final result, in alphabetical oder–hence the 1, 2, numbering.
 
-# Name + Number prefix, suffix, and counter reset for configuration sets
+
+### Sublayer Options
+
+🧪 BETA FEATURE
+By default, nested folders will inherit `blend` and `opacity` settings from the root-level layer defined in `layersOrder`. When you need to overwrite that on a sublayer-basis (by name of the nested folder, not by filename), you can specify a sublayerOptions object.
+
+```js
+layersOrder: [
+      { name: "Clothes" },
+      {
+        name: "Bases",
+        blend: "destination-over", // optional
+        sublayerOptions: { Hands: { blend: "source-over" } },
+      },
+      { name: "Holdableitems" },
+    ],
+```
+
+**In the example above**: The intended stacking order is `Base > Clothes > Hand > holdableItem`, because `Hands` are a nested subfolder of `Bases`, this can be tricky. By defining `blend: destination-over` for the Base, and then `source-over` for the Hands, the stacking order can be controlled to draw the Base _under_ the clothes and _then_ the Hand above the clothes.
+
+# Metadata Name and Number
+
+Name + Number prefix, suffix, and counter reset for configuration sets
 
 If you are using the generator with multiple `layerConfiguration` objects to generate different species/genders/types, it is possible to add a name prefix and a suffix, as well as a reset counter for the names, so the token names start at `1` for each type.
 
@@ -397,6 +436,68 @@ node utils/replace.js ./ultraRares -i properties.edition
 ⚠️ This util requires the `build` directory to be complete (after generation)
 
 <hr />
+
+# Solana Metadata
+
+🧪 BETA FEATURE
+
+If you are building for Solana, all the image generation options in config are available and are the same.
+
+## To setup your Solana specific metadata
+
+Configure the `solona_config.js` file located in the `Solana/` folder.
+Here, enter in all the necessary information for your collection.
+
+You can run the generator AND output Solana data by running the following command from your terminal
+
+```
+yarn generate:solana
+```
+
+If you are using npm,
+
+```
+npm run generate:solana
+```
+
+**After running, your Solana ready files will be in `build/solana`**
+<br/>
+<br/>
+
+If you need to convert existing images/json to solana metadata standards, you can run the util by itself with,
+
+```
+node utils/metaplex.js
+```
+
+# Cardano Metadata
+
+🧪 BETA FEATURE: Work in progress
+⚠️ Check the output metadata for cardano standards accuracy
+
+If you are generating for Cardano, you can generate and output cardano formatted data at the same time, or run the util script separately after generation (or to an existing collection with proper data)
+
+First, edit the `cardano_config.js` file in the `Cardano/` folder with your information.
+
+Then, to generate images _and_ cardano data at once, run:
+
+```
+yarn generate:cardano
+```
+
+or if you're using npm
+
+```
+npm run generate:cardano
+```
+
+## running the standalone cardano util
+
+If you have an existing set of generated images and data, **and** you have a configured `Cardano/cardano_config.js` file, you can run the cardano conversion script with:
+
+```
+node utils/cardano.js
+```
 
 # incompatibilities
 
