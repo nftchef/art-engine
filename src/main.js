@@ -634,8 +634,7 @@ const startCreating = async () => {
             : null;
 
 
-          // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2". - BB
-          //const _name = `${_prefix ? _prefix + " " : ""}#${_suffix ? _edition : _edition - _offset}${_suffix ? " " + _suffix + (_offset>0 ? " #" + (_edition - _offset) : "") : ""}`; 
+          // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2".
           const _name = `${_prefix ? `${_prefix} ` : ``}#${_suffix ? abstractedIndexes[0] : abstractedIndexes[0] - _offset}${_suffix ? ` ${_suffix}${layerConfigurations[layerConfigIndex].resetNameIndex ? ` #${abstractedIndexes[0] - _offset}` : ``}` : ``}`;
           console.log("_offset: "+_offset);
 
