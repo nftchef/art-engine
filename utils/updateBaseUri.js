@@ -6,14 +6,14 @@ const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 const fs = require("fs");
 
 console.log(path.join(basePath, "/src/config.js"));
-const { baseUri } = require(path.join(basePath, "/src/config.js"));
+const { baseUri, outputJPEG } = require(path.join(basePath, "/src/config.js"));
 
 // read json data
 let rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
 let data = JSON.parse(rawdata);
 
 data.forEach((item) => {
-  item.image = `${baseUri}/${item.edition}.png`;
+  item.image = `${baseUri}/${item.edition}.${ outputJPEG ? `jpg` : `png` }`;
   fs.writeFileSync(
     `${basePath}/build/json/${item.edition}.json`,
     JSON.stringify(item, null, 2)
