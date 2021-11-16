@@ -8,7 +8,7 @@ const { createCanvas, loadImage } = require("canvas");
 const buildDir = `${basePath}/build`;
 
 console.log(path.join(basePath, "/src/config.js"));
-const { preview } = require(path.join(basePath, "/src/config.js"));
+const { preview, outputJPEG } = require(path.join(basePath, "/src/config.js"));
 
 // read json data
 const rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
@@ -37,7 +37,7 @@ const saveProjectPreviewImage = async (_data) => {
   // Don't want to rely on "edition" for assuming index
   for (let index = 0; index < _data.length; index++) {
     const nft = _data[index];
-    await loadImage(`${buildDir}/images/${nft.edition}.png`).then((image) => {
+    await loadImage(`${buildDir}/images/${nft.edition}.${ outputJPEG ? `jpg` : `png` }`).then((image) => {
       previewCtx.drawImage(
         image,
         thumbWidth * (index % thumbPerRow),
