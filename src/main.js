@@ -641,7 +641,6 @@ const startCreating = async () => {
 
           // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2".
           const _name = `${_prefix ? `${_prefix} ` : ``}#${_suffix ? abstractedIndexes[0] : abstractedIndexes[0] - _offset}${_suffix ? ` ${_suffix}${layerConfigurations[layerConfigIndex].resetNameIndex ? ` #${abstractedIndexes[0] - _offset}` : ``}` : ``}`;
-          console.log("_offset: "+_offset);
 
           // New description builder, it can embed the asset name, AND overwrite the description for different layerConfigs. 
           // Can form unique descriptions like; "Item #10 is an art piece from Collection X".
@@ -657,7 +656,7 @@ const startCreating = async () => {
 
           saveMetaDataSingleFile(abstractedIndexes[0]);
           console.log(
-            `Created edition: ${abstractedIndexes[0]}, with DNA: ${hash(
+            `Created edition: ${abstractedIndexes[0]}, "${_name}" with DNA: ${hash(
               newDna
             )}`
           );
