@@ -31,7 +31,12 @@ const layerConfigurations = [
     nameSuffix: "Set A", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
     descriptionOverwrite: "{name} with Unique Description For Layer Set A", // LayerConfig spesific descriptions. Use {name} to embed asset names.
     layersOrder: [
-      { name: "Back Accessory" },
+      {
+        name: "Back Accessory",
+        options: {
+          bypassDNA: true,
+        },
+      },
       { name: "Head" },
       { name: "Clothes" },
       { name: "Eyes" },
