@@ -201,9 +201,9 @@ const layersSetup = (layersOrder) => {
         display_type: layerObj.display_type,
       }),
       bypassDNA:
-      layerObj.options?.["bypassDNA"] !== undefined
-        ? layerObj.options?.["bypassDNA"]
-        : false,
+        layerObj.options?.["bypassDNA"] !== undefined
+          ? layerObj.options?.["bypassDNA"]
+          : false,
     };
   });
 
@@ -350,7 +350,7 @@ const constructLayerToDna = (_dna = [], _layers = []) => {
  * @param {String} _dna New DNA string
  * @returns new DNA string with any items that should be filtered, removed.
  */
- const filterDNAOptions = (_dna) => {
+const filterDNAOptions = (_dna) => {
   const filteredDNA = _dna.filter((element) => {
     const query = /(\?.*$)/;
     const querystring = query.exec(element);

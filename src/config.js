@@ -54,7 +54,12 @@ const layerConfigurations = [
     descriptionOverwrite: "Description for {name} from Layer Set B", // LayerConfig spesific descriptions. Use {name} to embed asset names.
     
     layersOrder: [
-      { name: "Back Accessory" },
+      {
+        name: "Back Accessory",
+        options: {
+          bypassDNA: true,
+        },
+      },
       { name: "Head" },
       { name: "Clothes" },
       { name: "Eyes" },
