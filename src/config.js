@@ -49,7 +49,7 @@ const layerConfigurations = [
   {
     growEditionSizeTo: 10,
     namePrefix: "Monkey",
-    resetNameIndex: false, // this will start the count at #1 for this layerconfig
+    resetNameIndex: true, // this will start the count at #1 for this layerconfig
     nameSuffix: "Set B", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
     descriptionOverwrite: "Description for {name} from Layer Set B", // LayerConfig spesific descriptions. Use {name} to embed asset names.
     
