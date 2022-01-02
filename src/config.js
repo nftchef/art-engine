@@ -54,11 +54,12 @@ const layerConfigurations = [
     descriptionOverwrite: "Description for {name} from Layer Set B", // LayerConfig spesific descriptions. Use {name} to embed asset names.
     
     layersOrder: [
+      { name: "Background" },
       {
         name: "Back Accessory",
-        options: {
-          bypassDNA: true,
-        },
+        // options: {
+        //   bypassDNA: true,
+        // },
       },
       { name: "Head" },
       { name: "Clothes" },
@@ -96,8 +97,7 @@ const incompatible = {
  */
 
 const forcedCombinations = {
-  //    Force some layers if a certain layer is used.
-  //floral: ["MetallicShades", "Golden Sakura"],
+  // floral: ["MetallicShades", "Golden Sakura"],
 };
 
 const shuffleLayerConfigurations = false;
@@ -158,6 +158,13 @@ const rarityDelimiter = "#";
 
 const uniqueDnaTorrance = 10000;
 
+/**
+ * Set to true to always use the root folder as trait_tybe
+ * Set to false to use weighted parent folders as trait_type
+ * Default is true.
+ */
+const useRootTraitType = true;
+
 const preview = {
   thumbPerRow: 5,
   thumbWidth: 50,
@@ -186,5 +193,6 @@ module.exports = {
   traitValueOverrides,
   outputJPEG,
   emptyLayerName,
+  useRootTraitType,
   hashImages,
 };
