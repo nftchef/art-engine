@@ -109,7 +109,7 @@ jsonFiles.forEach((file) => {
       ...(jsonData.imageHash !== undefined && {
         imageHash: jsonData.imageHash,
       }),
-      compiler: "HashLips Art Engine - NFTChef fork | SolanaJax",
+      compiler: "HashLips Art Engine - NFTChef fork | Qualifieddevs.io",
     },
   };
   fs.writeFileSync(
