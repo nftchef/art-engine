@@ -18,6 +18,7 @@ const {
   layersDir,
   format,
   baseUri,
+  baseExternalUrl,
   description,
   background,
   uniqueDnaTorrance,
@@ -275,8 +276,12 @@ const drawBackground = (canvasContext) => {
 
 const addMetadata = (_dna, _edition, _prefixData) => {
   let dateTime = Date.now();
-  const { _prefix, _offset, _imageHash } = _prefixData;
-
+  const { 
+    _name,
+    _description,
+    _imageHash,
+  } = _prefixData;
+  
   const combinedAttrs = [...attributesList, ...extraAttributes()];
   const cleanedAttrs = combinedAttrs.reduce((acc, current) => {
     const x = acc.find((item) => item.trait_type === current.trait_type);
@@ -289,9 +294,16 @@ const addMetadata = (_dna, _edition, _prefixData) => {
 
   let tempMetadata = {
     dna: hash(_dna),
-    name: `${_prefix ? _prefix + " " : ""}#${_edition - _offset}`,
-    description: description,
+    
+    name: _name, 
+    
+    description: _description, 
+
+    // Adds external_url if the baseExternalUrl in config is not empty, combines it with edition numbers. - BB
+    ...(baseExternalUrl !== "" && { external_url: `${baseExternalUrl}${_edition}` }), 
+
     image: `${baseUri}/${_edition}${outputJPEG ? ".jpg" : ".png"}`,
+    
     ...(hashImages === true && { imageHash: _imageHash }),
     edition: _edition,
     date: dateTime,
@@ -752,11 +764,27 @@ const postProcessMetadata = (layerData) => {
       return acc;
     }, 0);
   }
+  
+  // if there's a suffix for the current configIndex, then
+  // add it after the counter number
+  // if resetNameIndex is on too, the resetted counter will be added after the suffix
+  const _suffix = layerConfigurations[layerConfigIndex].nameSuffix
+    ? layerConfigurations[layerConfigIndex].nameSuffix
+    : null;
 
+  // New name builder. It can form names like; "PREFIX #10 - SUFFIX #2".
+  const _name = `${_prefix ? `${_prefix} ` : ``}#${_suffix ? abstractedIndexes[0] : abstractedIndexes[0] - _offset}${_suffix ? ` ${_suffix}${layerConfigurations[layerConfigIndex].resetNameIndex ? ` #${abstractedIndexes[0] - _offset}` : ``}` : ``}`;
+
+  // New description builder, it can embed the asset name, AND overwrite the description for different layerConfigs. 
+  // Can form unique descriptions like; "Item #10 is an art piece from Collection X".
+  const _description = (layerConfigurations[layerConfigIndex].descriptionOverwrite
+    ? layerConfigurations[layerConfigIndex].descriptionOverwrite
+    : description).replace(/{name}/g, _name);
+  
   return {
     _imageHash,
-    _prefix,
-    _offset,
+    _name,
+    _description,
   };
 };
 
@@ -765,11 +793,11 @@ const outputFiles = (abstractedIndexes, layerData) => {
   // Save the canvas buffer to file
   saveImage(abstractedIndexes[0]);
 
-  const { _imageHash, _prefix, _offset } = postProcessMetadata(layerData);
+  const { _imageHash, _name, _description } = postProcessMetadata(layerData);
 
   addMetadata(newDna, abstractedIndexes[0], {
-    _prefix,
-    _offset,
+    _name,
+    _description,
     _imageHash,
   });
 

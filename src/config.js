@@ -12,18 +12,47 @@ const description =
   "This is the description of your NFT project, remember to replace this";
 const baseUri = "ipfs://NewUriToReplace";
 
+const baseExternalUrl = "https://test.com/collection?asset="; //Base url for extelnal link under the image on OpenSea. The edition number will be appended. Leave empty "" to remove. - BB
+
 const outputJPEG = false; // if false, the generator outputs png's
 
 // if you use an empty/transparent file, set the name here.
 const emptyLayerName = "NONE";
 
-//IF you need a provenance hash, turn this on
+//IF you need a provenance hash, turn this on 
 const hashImages = true;
 
 const layerConfigurations = [
+
   {
-    growEditionSizeTo: 11,
-    // namePrefix: "Monkey", Use to add a name to Metadata `name:`
+    growEditionSizeTo: 5,
+    namePrefix: "Monkey",
+    resetNameIndex: true, // this will start the count at #1 for this layerconfig
+    nameSuffix: "Set A", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
+    descriptionOverwrite: "{name} with Unique Description For Layer Set A", // LayerConfig spesific descriptions. Use {name} to embed asset names.
+    layersOrder: [
+      {
+        name: "Back Accessory",
+        options: {
+          bypassDNA: true,
+        },
+      },
+      { name: "Head" },
+      { name: "Clothes" },
+      { name: "Eyes" },
+      { name: "Hair" },
+      { name: "Head Accessory" },
+      { name: "Shirt Accessories" },
+    ],
+  },
+  
+  {
+    growEditionSizeTo: 10,
+    namePrefix: "Monkey",
+    resetNameIndex: true, // this will start the count at #1 for this layerconfig
+    nameSuffix: "Set B", // add a suffix after the number. if resetNameIndex is on too, put the reseted counter after the suffix - BB
+    descriptionOverwrite: "Description for {name} from Layer Set B", // LayerConfig spesific descriptions. Use {name} to embed asset names.
+    
     layersOrder: [
       { name: "Background" },
       {
@@ -40,19 +69,10 @@ const layerConfigurations = [
       { name: "Shirt Accessories" },
     ],
   },
-  // {
-  //   growEditionSizeTo: 10,
-  //   namePrefix: "Lion",
-  //   resetNameIndex: true, // this will start the Lion count at #1 instead of #6
-  //   layersOrder: [
-  //     { name: "Background" },
-  //     { name: "Hats" },
-  //     { name: "Male Hair" },
-  //   ],
-  // },
 ];
 
-/**
+
+/** 
  * Incompatible items can be added to this object by a files cleanName
  * This works in layer order, meaning, you need to define the layer that comes
  * first as the Key, and the incompatible items that _may_ come after.
@@ -65,7 +85,8 @@ const incompatible = {
   //   White: ["rare-Pink-Pompadour"],
 };
 
-/**
+
+/** 
  * Require combinations of files when constructing DNA, this bypasses the
  * randomization and weights.
  *
@@ -74,6 +95,7 @@ const incompatible = {
  * the items in the array are "required" items that should be pulled from folders
  * further in the stack
  */
+
 const forcedCombinations = {
   // floral: ["MetallicShades", "Golden Sakura"],
 };
@@ -102,7 +124,10 @@ const background = {
   brightness: "80%",
 };
 
-const extraMetadata = {};
+const extraMetadata = {
+  // You can add extra info for your collection here. Such as the artist name.
+  "Artist": "A person",
+};
 
 const extraAttributes = () => [
   // Optionally, if you need to overwrite one of your layers attributes.
@@ -152,6 +177,7 @@ module.exports = {
   layersDir,
   format,
   baseUri,
+  baseExternalUrl,
   description,
   background,
   uniqueDnaTorrance,
