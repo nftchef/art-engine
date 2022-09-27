@@ -56,7 +56,7 @@ layerConfigurations.forEach((config) => {
         // get the last name in the long string path by splitting, then reversing
         .map(
           (pathname) =>
-            `${layer.name}${pathname.split(`${layer.name}`).reverse()[0]}`
+            `${layer.name}${pathname.split(`layers/${layer.name}`).reverse()[0]}`
         )
         // Then, filter out the folders with a weight, those are 'values' not trait_types
         .filter(
