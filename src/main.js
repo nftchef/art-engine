@@ -142,10 +142,21 @@ const getElementOptions = (layer, sublayer) => {
   return { blendmode, opacity };
 };
 
+/* Parses the z-layering order 
+  "z2," returns 2  // towards front
+  "2," returns -2  // towards back
+  Otherwise returns null
+*/
 const parseZIndex = (str) => {
   const z = zflag.exec(str);
-  return z ? parseInt(z[0].match(/-?\d+/)[0]) : null;
-};
+  if ( z ) {
+    let zIndex = z[0].indexOf("z")
+    if( zIndex == 0 ) {
+      return parseInt( str.slice(1).match(/-?\d+/)[0] );
+    }
+  }
+
+  return null;
 
 const getElements = (path, layer) => {
   return fs
