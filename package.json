@@ -25,8 +25,7 @@
     "update:metadata": "node utils/updateInfo.js",
     "update_info:tezos": "node tezos/updateInfo.js",
     "resize": "node utils/resize.js",
-    "rarity": "node utils/rarity.js",
-    "preview": "node utils/createPreviewCollage.js"
+    "rarity": "node utils/rarity.js"
   },
   "author": "Daniel Eugene Botha (HashLips), NFTChef",
   "license": "MIT",
@@ -36,8 +35,9 @@
     "commander": "^8.2.0",
     "csv-writer": "^1.6.0",
     "eslint-plugin-node": "^11.1.0",
+    "gif-encoder-2": "^1.0.5",
     "keccak256": "^1.0.3",
     "sharp": "^0.30.2",
-    "gif-encoder-2": "^1.0.5"
+    "ts-migrate": "^0.1.35"
   }
 }
