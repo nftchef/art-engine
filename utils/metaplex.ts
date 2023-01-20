@@ -1,29 +1,40 @@
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
 const chalk = require("chalk");
 
 const {
   creators,
+  // @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'descriptio... Remove this comment to see the full error message
   description,
   external_url,
   NFTName,
   royaltyFee,
   symbol,
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 } = require(path.join(basePath, "/Solana/solana_config.js"));
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'startIndex... Remove this comment to see the full error message
 const { startIndex, outputJPEG } = require(path.join(
   basePath,
   "/src/config.js"
 ));
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'imagesDir'... Remove this comment to see the full error message
 const imagesDir = `${basePath}/build/images`;
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jsonDir'.
 const jsonDir = `${basePath}/build/json`;
 
 const metaplexFilePath = `${basePath}/build/solana`;
 const metaplexDir = `${basePath}/build/solana`;
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'setup'.
 const setup = () => {
   if (fs.existsSync(metaplexFilePath)) {
     fs.rmSync(metaplexFilePath, {
@@ -37,14 +48,16 @@ const setup = () => {
   }
 };
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getIndivid... Remove this comment to see the full error message
 const getIndividualImageFiles = () => {
   return fs.readdirSync(imagesDir);
 };
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getIndivid... Remove this comment to see the full error message
 const getIndividualJsonFiles = () => {
   return fs
     .readdirSync(jsonDir)
-    .filter((item) => /^[0-9]{1,6}.json/g.test(item));
+    .filter((item: any) => /^[0-9]{1,6}.json/g.test(item));
 };
 
 setup();
@@ -60,7 +73,7 @@ const outputFormat = outputJPEG ? "jpg" : "png";
 // Rename all image files to n-1.png (to be zero indexed "start at zero") and store in solana/images
 if (startIndex != 0) {
   const imageFiles = getIndividualImageFiles();
-  imageFiles.forEach((file) => {
+  imageFiles.forEach((file: any) => {
     let nameWithoutExtension = file.slice(0, -4);
     let editionCountFromFileName = Number(nameWithoutExtension);
     let newEditionCount = editionCountFromFileName - startIndex;
@@ -78,13 +91,14 @@ if (startIndex != 0) {
 }
 
 // Identify json files
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jsonFiles'... Remove this comment to see the full error message
 const jsonFiles = getIndividualJsonFiles();
 console.log(
   chalk.green(`Found ${jsonFiles.length} json files in "${jsonDir}" to process`)
 );
 
 // Iterate, open and put in metadata list
-jsonFiles.forEach((file) => {
+jsonFiles.forEach((file: any) => {
   let nameWithoutExtension = file.slice(0, -4);
   let editionCountFromFileName = Number(nameWithoutExtension);
   let newEditionCount = editionCountFromFileName - startIndex;

@@ -1,16 +1,24 @@
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = process.cwd();
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'createCanv... Remove this comment to see the full error message
 const { createCanvas, loadImage } = require("canvas");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'buildDir'.
 const buildDir = `${basePath}/build`;
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'imageDir'.
 const imageDir = `${buildDir}/images`;
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'format'.
 const { format, preview_gif } = require(`${basePath}/src/config.js`);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'canvas'.
 const canvas = createCanvas(format.width, format.height);
 const ctx = canvas.getContext("2d");
 
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
-let hashlipsGiffer = null;
+let hashlipsGiffer: any = null;
 
-const loadImg = async (_img) => {
+const loadImg = async (_img: any) => {
   return new Promise(async (resolve) => {
     const loadedImage = await loadImage(`${_img}`);
     resolve({ loadedImage: loadedImage });
@@ -18,12 +26,13 @@ const loadImg = async (_img) => {
 };
 
 // read image paths
-const imageList = [];
-const rawdata = fs.readdirSync(imageDir).forEach((file) => {
+const imageList: any = [];
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'rawdata'.
+const rawdata = fs.readdirSync(imageDir).forEach((file: any) => {
   imageList.push(loadImg(`${imageDir}/${file}`));
 });
 
-const saveProjectPreviewGIF = async (_data) => {
+const saveProjectPreviewGIF = async (_data: any) => {
   // Extract from preview config
   const { numberOfImages, order, repeat, quality, delay, imageName } =
     preview_gif;
@@ -67,6 +76,7 @@ const saveProjectPreviewGIF = async (_data) => {
       }
 
       // Reduce the size of the array of Images to the desired amount
+      // @ts-expect-error TS(2345): Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
       if (parseInt(numberOfImages) > 0) {
         renderObjectArray = renderObjectArray.slice(0, numberOfImages);
       }

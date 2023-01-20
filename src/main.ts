@@ -1,12 +1,20 @@
+// @ts-expect-error TS(6200): Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const keccak256 = require("keccak256");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
 const chalk = require("chalk");
 
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const { createCanvas, loadImage } = require(path.join(
   basePath,
   "/node_modules/canvas"
@@ -35,6 +43,7 @@ const {
   traitValueOverrides,
   uniqueDnaTorrance,
   useRootTraitType,
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 } = require(path.join(basePath, "/src/config.js"));
 const canvas = createCanvas(format.width, format.height);
 const ctxMain = canvas.getContext("2d");
@@ -52,6 +61,7 @@ const DNA_DELIMITER = "*";
 
 const zflag = /(z-?\d*,)/;
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'buildSetup... Remove this comment to see the full error message
 const buildSetup = () => {
   if (fs.existsSync(buildDir)) {
     fs.rmdirSync(buildDir, { recursive: true });
@@ -61,7 +71,7 @@ const buildSetup = () => {
   fs.mkdirSync(path.join(buildDir, "/images"));
 };
 
-const getRarityWeight = (_path) => {
+const getRarityWeight = (_path: any) => {
   // check if there is an extension, if not, consider it a directory
   const exp = new RegExp(`${rarityDelimiter}(\\d*)`, "g");
   const weight = exp.exec(_path);
@@ -73,12 +83,12 @@ const getRarityWeight = (_path) => {
   return weightNumber;
 };
 
-const cleanDna = (_str) => {
+const cleanDna = (_str: any) => {
   var dna = _str.split(":").shift();
   return dna;
 };
 
-const cleanName = (_str) => {
+const cleanName = (_str: any) => {
   const hasZ = zflag.test(_str);
 
   const zRemoved = _str.replace(zflag, "");
@@ -90,7 +100,7 @@ const cleanName = (_str) => {
   return nameWithoutWeight;
 };
 
-const parseQueryString = (filename, layer, sublayer) => {
+const parseQueryString = (filename: any, layer: any, sublayer: any) => {
   const query = /\?(.*)\./;
   const querystring = query.exec(filename);
   if (!querystring) {
@@ -103,10 +113,14 @@ const parseQueryString = (filename, layer, sublayer) => {
   }, []);
 
   return {
+    // @ts-expect-error TS(2339): Property 'blend' does not exist on type 'never[]'.
     blendmode: layerstyles.blend
+      // @ts-expect-error TS(2339): Property 'blend' does not exist on type 'never[]'.
       ? layerstyles.blend
       : getElementOptions(layer, sublayer).blendmode,
+    // @ts-expect-error TS(2339): Property 'opacity' does not exist on type 'never[]... Remove this comment to see the full error message
     opacity: layerstyles.opacity
+      // @ts-expect-error TS(2339): Property 'opacity' does not exist on type 'never[]... Remove this comment to see the full error message
       ? layerstyles.opacity / 100
       : getElementOptions(layer, sublayer).opacity,
   };
@@ -116,7 +130,7 @@ const parseQueryString = (filename, layer, sublayer) => {
  * Given some input, creates a sha256 hash.
  * @param {Object} input
  */
-const hash = (input) => {
+const hash = (input: any) => {
   const hashable = typeof input === "string" ? JSON.stringify(input) : input;
   return keccak256(hashable).toString("hex");
 };
@@ -129,12 +143,13 @@ const hash = (input) => {
  * @param {String} sublayer Clean name of the current layer
  * @returns {blendmode, opacity} options object
  */
-const getElementOptions = (layer, sublayer) => {
+const getElementOptions = (layer: any, sublayer: any) => {
   let blendmode = "source-over";
   let opacity = 1;
   if (layer.sublayerOptions?.[sublayer]) {
     const options = layer.sublayerOptions[sublayer];
 
+    // @ts-expect-error TS(2304): Cannot find name 'bypassDNA'.
     options.bypassDNA !== undefined ? (bypassDNA = options.bypassDNA) : null;
     options.blend !== undefined ? (blendmode = options.blend) : null;
     options.opacity !== undefined ? (opacity = options.opacity) : null;
@@ -146,19 +161,20 @@ const getElementOptions = (layer, sublayer) => {
   return { blendmode, opacity };
 };
 
-const parseZIndex = (str) => {
+const parseZIndex = (str: any) => {
   const z = zflag.exec(str);
+  // @ts-expect-error TS(2531): Object is possibly 'null'.
   return z ? parseInt(z[0].match(/-?\d+/)[0]) : null;
 };
 
-const getElements = (path, layer) => {
+const getElements = (path: any, layer: any) => {
   return fs
     .readdirSync(path)
-    .filter((item) => {
+    .filter((item: any) => {
       const invalid = /(\.ini)/g;
       return !/(^|\/)\.[^\/\.]/g.test(item) && !invalid.test(item);
     })
-    .map((i, index) => {
+    .map((i: any, index: any) => {
       const name = cleanName(i);
       const extension = /\.[0-9a-zA-Z]+$/;
       const sublayer = !extension.test(i);
@@ -167,6 +183,7 @@ const getElements = (path, layer) => {
       const { blendmode, opacity } = parseQueryString(i, layer, name);
       //pass along the zflag to any children
       const zindex = zflag.exec(i)
+        // @ts-expect-error TS(2531): Object is possibly 'null'.
         ? zflag.exec(i)[0]
         : layer.zindex
         ? layer.zindex
@@ -188,6 +205,7 @@ const getElements = (path, layer) => {
         element.path = `${path}${i}`;
         const subPath = `${path}${i}/`;
         const sublayer = { ...layer, blend: blendmode, opacity, zindex };
+        // @ts-expect-error TS(2339): Property 'elements' does not exist on type '{ subl... Remove this comment to see the full error message
         element.elements = getElements(subPath, sublayer);
       }
 
@@ -204,13 +222,17 @@ const getElements = (path, layer) => {
       // we need to check if the parent is required, or if it's a prop-folder
       if (
         useRootTraitType &&
+        // @ts-expect-error TS(2532): Object is possibly 'undefined'.
         lineage[lineage.length - typeAncestor].includes(rarityDelimiter)
       ) {
+        // @ts-expect-error TS(2532): Object is possibly 'undefined'.
         typeAncestor += 1;
       }
 
+      // @ts-expect-error TS(2532): Object is possibly 'undefined'.
       const parentName = cleanName(lineage[lineage.length - typeAncestor]);
 
+      // @ts-expect-error TS(2339): Property 'trait' does not exist on type '{ sublaye... Remove this comment to see the full error message
       element.trait = layer.sublayerOptions?.[parentName]
         ? layer.sublayerOptions[parentName].trait
         : layer.trait !== undefined
@@ -219,13 +241,14 @@ const getElements = (path, layer) => {
 
       const rawTrait = getTraitValueFromPath(element, lineage);
       const trait = processTraitOverrides(rawTrait);
+      // @ts-expect-error TS(2339): Property 'traitValue' does not exist on type '{ su... Remove this comment to see the full error message
       element.traitValue = trait;
 
       return element;
     });
 };
 
-const getTraitValueFromPath = (element, lineage) => {
+const getTraitValueFromPath = (element: any, lineage: any) => {
   // If the element is a required png. then, the trait property = the parent path
   // if the element is a non-required png. black%50.png, then element.name is the value and the parent Dir is the prop
   if (element.weight !== "required") {
@@ -241,12 +264,13 @@ const getTraitValueFromPath = (element, lineage) => {
  * @param {String} trait The default trait value from the path-name
  * @returns String trait of either overridden value of raw default.
  */
-const processTraitOverrides = (trait) => {
+const processTraitOverrides = (trait: any) => {
+  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return traitValueOverrides[trait] ? traitValueOverrides[trait] : trait;
 };
 
-const layersSetup = (layersOrder) => {
-  const layers = layersOrder.map((layerObj, index) => {
+const layersSetup = (layersOrder: any) => {
+  const layers = layersOrder.map((layerObj: any, index: any) => {
     return {
       id: index,
       name: layerObj.name,
@@ -267,7 +291,7 @@ const layersSetup = (layersOrder) => {
   return layers;
 };
 
-const saveImage = (_editionCount, _buildDir, _canvas) => {
+const saveImage = (_editionCount: any, _buildDir: any, _canvas: any) => {
   fs.writeFileSync(
     `${_buildDir}/images/${_editionCount}${outputJPEG ? ".jpg" : ".png"}`,
     _canvas.toBuffer(`${outputJPEG ? "image/jpeg" : "image/png"}`)
@@ -282,19 +306,19 @@ const genColor = () => {
   return pastel;
 };
 
-const drawBackground = (canvasContext, background) => {
+const drawBackground = (canvasContext: any, background: any) => {
   canvasContext.fillStyle = background.HSL ?? genColor();
 
   canvasContext.fillRect(0, 0, format.width, format.height);
 };
 
-const addMetadata = (_dna, _edition, _prefixData) => {
+const addMetadata = (_dna: any, _edition: any, _prefixData: any) => {
   let dateTime = Date.now();
   const { _prefix, _offset, _imageHash } = _prefixData;
 
   const combinedAttrs = [...attributesList, ...extraAttributes()];
   const cleanedAttrs = combinedAttrs.reduce((acc, current) => {
-    const x = acc.find((item) => item.trait_type === current.trait_type);
+    const x = acc.find((item: any) => item.trait_type === current.trait_type);
     if (!x) {
       return acc.concat([current]);
     } else {
@@ -318,7 +342,7 @@ const addMetadata = (_dna, _edition, _prefixData) => {
   return tempMetadata;
 };
 
-const addAttributes = (_element) => {
+const addAttributes = (_element: any) => {
   let selectedElement = _element.layer;
   const layerAttributes = {
     trait_type: _element.layer.trait,
@@ -329,24 +353,23 @@ const addAttributes = (_element) => {
   };
   if (
     attributesList.some(
-      (attr) => attr.trait_type === layerAttributes.trait_type
+      (attr: any) => attr.trait_type === layerAttributes.trait_type
     )
   )
     return;
   attributesList.push(layerAttributes);
 };
 
-const loadLayerImg = async (_layer) => {
+const loadLayerImg = async (_layer: any) => {
   return new Promise(async (resolve) => {
     // selected elements is an array.
-    const image = await loadImage(`${_layer.path}`).catch((err) =>
-      console.log(chalk.redBright(`failed to load ${_layer.path}`, err))
+    const image = await loadImage(`${_layer.path}`).catch((err: any) => console.log(chalk.redBright(`failed to load ${_layer.path}`, err))
     );
     resolve({ layer: _layer, loadedImage: image });
   });
 };
 
-const drawElement = (_renderObject) => {
+const drawElement = (_renderObject: any) => {
   const layerCanvas = createCanvas(format.width, format.height);
   const layerctx = layerCanvas.getContext("2d");
   layerctx.imageSmoothingEnabled = format.smoothing;
@@ -364,13 +387,15 @@ const drawElement = (_renderObject) => {
 };
 
 const constructLayerToDna = (_dna = [], _layers = []) => {
+  // @ts-expect-error TS(2339): Property 'split' does not exist on type 'never[]'.
   const dna = _dna.split(DNA_DELIMITER);
   let mappedDnaToLayers = _layers.map((layer, index) => {
-    let selectedElements = [];
+    let selectedElements: any = [];
     const layerImages = dna.filter(
-      (element) => element.split(".")[0] == layer.id
+      // @ts-expect-error TS(2339): Property 'id' does not exist on type 'never'.
+      (element: any) => element.split(".")[0] == layer.id
     );
-    layerImages.forEach((img) => {
+    layerImages.forEach((img: any) => {
       const indexAddress = cleanDna(img);
 
       //
@@ -379,7 +404,7 @@ const constructLayerToDna = (_dna = [], _layers = []) => {
       // const firstAddress = indices.shift();
       const lastAddress = indices.pop(); // 1
       // recursively go through each index to get the nested item
-      let parentElement = indices.reduce((r, nestedIndex) => {
+      let parentElement = indices.reduce((r: any, nestedIndex: any) => {
         if (!r[nestedIndex]) {
           throw new Error("wtf");
         }
@@ -392,11 +417,16 @@ const constructLayerToDna = (_dna = [], _layers = []) => {
     // continue to loop through them an return an array of selectedElements
 
     return {
+      // @ts-expect-error TS(2339): Property 'name' does not exist on type 'never'.
       name: layer.name,
+      // @ts-expect-error TS(2339): Property 'blendmode' does not exist on type 'never... Remove this comment to see the full error message
       blendmode: layer.blendmode,
+      // @ts-expect-error TS(2339): Property 'opacity' does not exist on type 'never'.
       opacity: layer.opacity,
       selectedElements: selectedElements,
+      // @ts-expect-error TS(2339): Property 'display_type' does not exist on type 'ne... Remove this comment to see the full error message
       ...(layer.display_type !== undefined && {
+        // @ts-expect-error TS(2339): Property 'display_type' does not exist on type 'ne... Remove this comment to see the full error message
         display_type: layer.display_type,
       }),
     };
@@ -412,8 +442,8 @@ const constructLayerToDna = (_dna = [], _layers = []) => {
  * @param {String} _dna New DNA string
  * @returns new DNA string with any items that should be filtered, removed.
  */
-const filterDNAOptions = (_dna) => {
-  const filteredDNA = _dna.split(DNA_DELIMITER).filter((element) => {
+const filterDNAOptions = (_dna: any) => {
+  const filteredDNA = _dna.split(DNA_DELIMITER).filter((element: any) => {
     const query = /(\?.*$)/;
     const querystring = query.exec(element);
     if (!querystring) {
@@ -427,6 +457,7 @@ const filterDNAOptions = (_dna) => {
     }, []);
     // currently, there is only support for the bypassDNA option,
     // when bypassDNA is true, return false to omit from .filter
+    // @ts-expect-error TS(2339): Property 'bypassDNA' does not exist on type 'never... Remove this comment to see the full error message
     return options.bypassDNA === "true" ? false : true;
   });
 
@@ -441,7 +472,7 @@ const filterDNAOptions = (_dna) => {
  * @param {String} _dna The entire newDNA string
  * @returns Cleaned DNA string without querystring parameters.
  */
-const removeQueryStrings = (_dna) => {
+const removeQueryStrings = (_dna: any) => {
   const query = /(\?.*$)/;
   return _dna.replace(query, "");
 };
@@ -472,19 +503,19 @@ const isDnaUnique = (_dna = []) => {
  *  from the top down
  * @returns Array DNA sequence
  */
+// @ts-expect-error TS(7023): 'pickRandomElement' implicitly has return type 'an... Remove this comment to see the full error message
 function pickRandomElement(
-  layer,
-  dnaSequence,
-  parentId,
-  incompatibleDNA,
-  forcedDNA,
-  bypassDNA,
-  zIndex
+  layer: any,
+  dnaSequence: any,
+  parentId: any,
+  incompatibleDNA: any,
+  forcedDNA: any,
+  bypassDNA: any,
+  zIndex: any
 ) {
   let totalWeight = 0;
   // Does this layer include a forcedDNA item? ya? just return it.
-  const forcedPick = layer.elements.find((element) =>
-    forcedDNA.includes(element.name)
+  const forcedPick = layer.elements.find((element: any) => forcedDNA.includes(element.name)
   );
   if (forcedPick) {
     debugLogs
@@ -518,7 +549,7 @@ function pickRandomElement(
   }
 
   const compatibleLayers = layer.elements.filter(
-    (layer) => !incompatibleDNA.includes(layer.name)
+    (layer: any) => !incompatibleDNA.includes(layer.name)
   );
   if (compatibleLayers.length === 0) {
     debugLogs
@@ -532,7 +563,7 @@ function pickRandomElement(
     return dnaSequence;
   }
 
-  compatibleLayers.forEach((element) => {
+  compatibleLayers.forEach((element: any) => {
     // If there is no weight, it's required, always include it
     // If directory has %, that is % chance to enter the dir
     if (element.weight == "required" && !element.sublayer) {
@@ -560,7 +591,7 @@ function pickRandomElement(
   // if the entire directory should be ignored…
 
   // number between 0 - totalWeight
-  const currentLayers = compatibleLayers.filter((l) => l.weight !== "required");
+  const currentLayers = compatibleLayers.filter((l: any) => l.weight !== "required");
 
   let random = Math.floor(Math.random() * totalWeight);
 
@@ -573,25 +604,31 @@ function pickRandomElement(
     if (random < 0) {
       // Check for incompatible layer configurations and only add incompatibilities IF
       // chosing _this_ layer.
+      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (incompatible[currentLayers[i].name]) {
         debugLogs
           ? console.log(
               `Adding the following to incompatible list`,
+              // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
               ...incompatible[currentLayers[i].name]
             )
           : null;
+        // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         incompatibleDNA.push(...incompatible[currentLayers[i].name]);
       }
       // Similar to incompaticle, check for forced combos
+      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (forcedCombinations[currentLayers[i].name]) {
         debugLogs
           ? console.log(
               chalk.bgYellowBright.black(
                 `\nSetting up the folling forced combinations for ${currentLayers[i].name}: `,
+                // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
                 ...forcedCombinations[currentLayers[i].name]
               )
             )
           : null;
+        // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         forcedDNA.push(...forcedCombinations[currentLayers[i].name]);
       }
       // if there's a sublayer, we need to concat the sublayers parent ID to the DNA srting
@@ -627,15 +664,15 @@ function pickRandomElement(
  * immediate ancestors
  * @param {[String]} layers array of dna string sequences
  */
-const sortLayers = (layers) => {
-  const nestedsort = layers.sort((a, b) => {
+const sortLayers = (layers: any) => {
+  const nestedsort = layers.sort((a: any, b: any) => {
     const addressA = a.split(":")[0];
     const addressB = b.split(":")[0];
     return addressA.length - addressB.length;
   });
 
   let stack = { front: [], normal: [], end: [] };
-  stack = nestedsort.reduce((acc, layer) => {
+  stack = nestedsort.reduce((acc: any, layer: any) => {
     const zindex = parseZIndex(layer);
     if (!zindex)
       return { ...acc, normal: [...(acc.normal ? acc.normal : []), layer] };
@@ -656,10 +693,11 @@ const sortLayers = (layers) => {
 };
 
 /** File String sort by zFlag */
-function sortByZ(dnastrings) {
-  return dnastrings.sort((a, b) => {
+function sortByZ(dnastrings: any) {
+  return dnastrings.sort((a: any, b: any) => {
     const indexA = parseZIndex(a);
     const indexB = parseZIndex(b);
+    // @ts-expect-error TS(2531): Object is possibly 'null'.
     return indexA - indexB;
   });
 }
@@ -668,21 +706,22 @@ function sortByZ(dnastrings) {
  * Sorting by index based on the layer.z property
  * @param {Array } layers selected Image layer objects array
  */
-function sortZIndex(layers) {
-  return layers.sort((a, b) => {
+function sortZIndex(layers: any) {
+  return layers.sort((a: any, b: any) => {
     const indexA = parseZIndex(a.zindex);
     const indexB = parseZIndex(b.zindex);
+    // @ts-expect-error TS(2531): Object is possibly 'null'.
     return indexA - indexB;
   });
 }
 
-const createDna = (_layers) => {
-  let dnaSequence = [];
-  let incompatibleDNA = [];
-  let forcedDNA = [];
+const createDna = (_layers: any) => {
+  let dnaSequence: any = [];
+  let incompatibleDNA: any = [];
+  let forcedDNA: any = [];
 
-  _layers.forEach((layer) => {
-    const layerSequence = [];
+  _layers.forEach((layer: any) => {
+    const layerSequence: any = [];
     pickRandomElement(
       layer,
       layerSequence,
@@ -701,16 +740,16 @@ const createDna = (_layers) => {
   return dnaStrand;
 };
 
-const writeMetaData = (_data) => {
+const writeMetaData = (_data: any) => {
   fs.writeFileSync(`${buildDir}/json/_metadata.json`, _data);
 };
 
-const writeDnaLog = (_data) => {
+const writeDnaLog = (_data: any) => {
   fs.writeFileSync(`${buildDir}/_dna.json`, _data);
 };
 
-const saveMetaDataSingleFile = (_editionCount, _buildDir) => {
-  let metadata = metadataList.find((meta) => meta.edition == _editionCount);
+const saveMetaDataSingleFile = (_editionCount: any, _buildDir: any) => {
+  let metadata = metadataList.find((meta: any) => meta.edition == _editionCount);
   debugLogs
     ? console.log(
         `Writing metadata for ${_editionCount}: ${JSON.stringify(metadata)}`
@@ -722,7 +761,7 @@ const saveMetaDataSingleFile = (_editionCount, _buildDir) => {
   );
 };
 
-function shuffle(array) {
+function shuffle(array: any) {
   let currentIndex = array.length,
     randomIndex;
   while (currentIndex != 0) {
@@ -743,13 +782,13 @@ function shuffle(array) {
  * @param {Object} layerData data passed from the current iteration of the loop or configured dna-set
  *
  */
-const paintLayers = (canvasContext, renderObjectArray, layerData) => {
+const paintLayers = (canvasContext: any, renderObjectArray: any, layerData: any) => {
   debugLogs ? console.log("\nClearing canvas") : null;
   canvasContext.clearRect(0, 0, format.width, format.height);
 
   const { abstractedIndexes, _background } = layerData;
 
-  renderObjectArray.forEach((renderObject) => {
+  renderObjectArray.forEach((renderObject: any) => {
     // one main canvas
     // each render Object should be a solo canvas
     // append them all to main canbas
@@ -773,7 +812,7 @@ const paintLayers = (canvasContext, renderObjectArray, layerData) => {
     : null;
 };
 
-const postProcessMetadata = (layerData) => {
+const postProcessMetadata = (layerData: any) => {
   const { abstractedIndexes, layerConfigIndex } = layerData;
   // Metadata options
   const savedFile = fs.readFileSync(
@@ -789,6 +828,7 @@ const postProcessMetadata = (layerData) => {
   // if resetNameIndex is turned on, calculate the offset and send it
   // with the prefix
   let _offset = 0;
+  // @ts-expect-error TS(2339): Property 'resetNameIndex' does not exist on type '... Remove this comment to see the full error message
   if (layerConfigurations[layerConfigIndex].resetNameIndex) {
     _offset = layerConfigurations[layerConfigIndex - 1].growEditionSizeTo;
   }
@@ -801,8 +841,8 @@ const postProcessMetadata = (layerData) => {
 };
 
 const outputFiles = (
-  abstractedIndexes,
-  layerData,
+  abstractedIndexes: any,
+  layerData: any,
   _buildDir = buildDir,
   _canvas = canvas
 ) => {
@@ -822,12 +862,14 @@ const outputFiles = (
   console.log(chalk.cyan(`Created edition: ${abstractedIndexes[0]}`));
 };
 
-const startCreating = async (storedDNA) => {
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'startCreat... Remove this comment to see the full error message
+const startCreating = async (storedDNA: any) => {
   if (storedDNA) {
     console.log(`using stored dna of ${storedDNA.size}`);
     dnaList = storedDNA;
     dnaList.forEach((dna) => {
       const editionExp = /\d+\//;
+      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       const dnaWithoutEditionNum = dna.replace(editionExp, "");
       uniqueDNAList.add(filterDNAOptions(dnaWithoutEditionNum));
     });
@@ -835,7 +877,7 @@ const startCreating = async (storedDNA) => {
   let layerConfigIndex = 0;
   let editionCount = 1; //used for the growEditionSize while loop, not edition number
   let failedCount = 0;
-  let abstractedIndexes = [];
+  let abstractedIndexes: any = [];
   for (
     let i = startIndex;
     i <=
@@ -863,12 +905,12 @@ const startCreating = async (storedDNA) => {
       if (isDnaUnique(newDna)) {
         let results = constructLayerToDna(newDna, layers);
         debugLogs ? console.log("DNA:", newDna.split(DNA_DELIMITER)) : null;
-        let loadedElements = [];
+        let loadedElements: any = [];
         // reduce the stacked and nested layer into a single array
-        const allImages = results.reduce((images, layer) => {
+        const allImages = results.reduce((images: any, layer: any) => {
           return [...images, ...layer.selectedElements];
         }, []);
-        sortZIndex(allImages).forEach((layer) => {
+        sortZIndex(allImages).forEach((layer: any) => {
           loadedElements.push(loadLayerImg(layer));
         });
 
@@ -880,6 +922,7 @@ const startCreating = async (storedDNA) => {
             _background: background,
           };
           paintLayers(ctxMain, renderObjectArray, layerData);
+          // @ts-expect-error TS(2554): Expected 4 arguments, but got 2.
           outputFiles(abstractedIndexes, layerData);
         });
 
@@ -900,6 +943,7 @@ const startCreating = async (storedDNA) => {
           console.log(
             `You need more layers or elements to grow your edition to ${layerConfigurations[layerConfigIndex].growEditionSizeTo} artworks!`
           );
+          // @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
           process.exit();
         }
       }
@@ -910,6 +954,7 @@ const startCreating = async (storedDNA) => {
   writeDnaLog(JSON.stringify([...dnaList], null, 2));
 };
 
+// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = {
   addAttributes,
   addMetadata,

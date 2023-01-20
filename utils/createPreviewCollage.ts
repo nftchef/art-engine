@@ -1,19 +1,28 @@
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'createCanv... Remove this comment to see the full error message
 const { createCanvas, loadImage } = require("canvas");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'buildDir'.
 const buildDir = `${basePath}/build`;
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'preview'.
 const { preview } = require(path.join(basePath, "/src/config.js"));
 
 // read json data
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'rawdata'.
 const rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'metadataLi... Remove this comment to see the full error message
 const metadataList = JSON.parse(rawdata);
 
-const saveProjectPreviewImage = async (_data) => {
+const saveProjectPreviewImage = async (_data: any) => {
   // Extract from preview config
   const { thumbWidth, thumbPerRow, imageRatio, imageName } = preview;
   // Calculate height on the fly
@@ -36,7 +45,7 @@ const saveProjectPreviewImage = async (_data) => {
   // Don't want to rely on "edition" for assuming index
   for (let index = 0; index < _data.length; index++) {
     const nft = _data[index];
-    await loadImage(`${buildDir}/images/${nft.edition}.png`).then((image) => {
+    await loadImage(`${buildDir}/images/${nft.edition}.png`).then((image: any) => {
       previewCtx.drawImage(
         image,
         thumbWidth * (index % thumbPerRow),

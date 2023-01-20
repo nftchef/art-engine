@@ -11,19 +11,28 @@
  *
  */
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
 
 console.log(path.join(basePath, "/src/config.js"));
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'baseUri'.
 const { baseUri, description } = require(path.join(basePath, "/src/config.js"));
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'Command'.
 const { Command } = require("commander");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'program'.
 const program = new Command();
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
 const chalk = require("chalk");
 
 // read json data
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'rawdata'.
 let rawdata = fs.readFileSync(`${basePath}/build/json/_metadata.json`);
 let data = JSON.parse(rawdata);
 
@@ -37,7 +46,7 @@ program
     "remove all instances of a trait from attributes"
   )
   .option("-n, --name <name>", "Rename the Name prefix for ALL tokens files.")
-  .action((options) => {
+  .action((options: any) => {
     if (options) {
       console.log("Running with options", { options });
     }
@@ -55,7 +64,7 @@ program
      * uses item.edition to ensure the proper number is used
      * insead of the loop index as images may have a different order.
      */
-    data.forEach((item) => {
+    data.forEach((item: any) => {
       item.image = `${baseUri}/${item.edition}.png`;
       item.description = description;
 
@@ -75,7 +84,7 @@ program
         console.log(chalk.redBright(`Removing ${options.removeTrait}`));
         console.log({ item: item.attributes });
         item.attributes = item.attributes.filter(
-          (trait) => trait.trait_type !== options.removeTrait
+          (trait: any) => trait.trait_type !== options.removeTrait
         );
       }
 

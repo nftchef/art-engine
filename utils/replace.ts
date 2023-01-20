@@ -7,25 +7,35 @@
  
  */
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'Command'.
 const { Command } = require("commander");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'program'.
 const program = new Command();
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
 const chalk = require("chalk");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'keccak256'... Remove this comment to see the full error message
 const keccak256 = require("keccak256");
 
 const builtImageDir = `${basePath}/build/images`;
 const builtJsonDir = `${basePath}/build/json`;
 
-const getIndividualJsonFiles = (sourcePath) => {
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getIndivid... Remove this comment to see the full error message
+const getIndividualJsonFiles = (sourcePath: any) => {
   return fs
     .readdirSync(sourcePath)
-    .filter((item) => /^[0-9]{1,6}.json/g.test(item));
+    .filter((item: any) => /^[0-9]{1,6}.json/g.test(item));
 };
 
-const getIndividualImageFiles = (sourcePath) => {
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getIndivid... Remove this comment to see the full error message
+const getIndividualImageFiles = (sourcePath: any) => {
   return fs.readdirSync(sourcePath);
 };
 
@@ -33,7 +43,9 @@ const getIndividualImageFiles = (sourcePath) => {
  * Given some input, creates a sha256 hash.
  * @param {Object} input
  */
-const hash = (input) => {
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'hash'.
+const hash = (input: any) => {
+  // @ts-expect-error TS(2580): Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
   const hashable = typeof input === Buffer ? input : JSON.stringify(input);
   return keccak256(hashable).toString("hex");
 };
@@ -44,10 +56,10 @@ const hash = (input) => {
  * @param {Object} obj Optional to directly return the value
  * @returns
  */
-function resolveNested(stringpath, obj) {
+function resolveNested(stringpath: any, obj: any) {
   return stringpath
     .split(".") // split string based on `.`
-    .reduce(function (o, k) {
+    .reduce(function (o: any, k: any) {
       return o && o[k]; // get inner property if `o` is defined else get `o` and return
     }, obj); // set initial value as object
 }
@@ -62,7 +74,7 @@ function resolveNested(stringpath, obj) {
  * @param {String} sourcePath path to source files
  * @param {Object} options command options object
  */
-const replace = (image, randomID, sourcePath, options) => {
+const replace = (image: any, randomID: any, sourcePath: any, options: any) => {
   options.sneak
     ? console.log(chalk.cyan(`Randomly replacing ${image} -> ${randomID} `))
     : null;
@@ -102,7 +114,7 @@ const replace = (image, randomID, sourcePath, options) => {
     );
 
     // update the object in the globalFile,
-    const updateIndex = globalMetadata.findIndex((item) => {
+    const updateIndex = globalMetadata.findIndex((item: any) => {
       const globalIndex = options.identifier
         ? resolveNested(options.identifier, item)
         : item.edition;
@@ -157,14 +169,16 @@ program
     "-i, --identifier <identifier>",
     'Change the default object identifier/location for the edition/id number. defaults to "edition"'
   )
-  .action((source, options, command) => {
+  .action((source: any, options: any, command: any) => {
     // get source to replace from
     // replaceFrom source/ -> destination
 
     // get source to replace to, image + json
     const imageSource = path.join(basePath, source, `/images`);
     const dataSource = path.join(basePath, source, `/json`);
+    // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
     const imageFiles = getIndividualImageFiles(imageSource);
+    // @ts-expect-error TS(2554): Expected 0 arguments, but got 1.
     const dataFiles = getIndividualJsonFiles(dataSource);
     // global variable to keep track of which ID's have been used.
     const randomIDs = new Set();
@@ -195,7 +209,7 @@ program
     const randomIDArray = Array.from(randomIDs);
 
     // randomly choose a number
-    imageFiles.forEach((image, index) =>
+    imageFiles.forEach((image: any, index: any) =>
       replace(image, randomIDArray[index], path.join(basePath, source), options)
     );
     // if image is missing accompanying json, throw error.

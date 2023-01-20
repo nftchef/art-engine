@@ -1,5 +1,6 @@
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'MODE'.
 const MODE = {
   sourceOver: "source-over",
   sourceIn: "source-in",
@@ -29,6 +30,7 @@ const MODE = {
   luminosity: "luminosity",
 };
 
+// @ts-expect-error TS(2552): Cannot find name 'module'. Did you mean 'MODE'?
 module.exports = {
   MODE,
 };

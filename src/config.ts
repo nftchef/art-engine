@@ -1,11 +1,16 @@
+// @ts-expect-error TS(6200): Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
 
 // see src/blendMode.js for available blend modes
 // documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const { MODE } = require(path.join(basePath, "src/blendMode.js"));
 
 const buildDir = path.join(basePath, "/build");
@@ -178,6 +183,7 @@ const preview_gif = {
   imageName: "preview.gif",
 };
 
+// @ts-expect-error TS(2552): Cannot find name 'module'. Did you mean 'MODE'?
 module.exports = {
   background,
   baseUri,

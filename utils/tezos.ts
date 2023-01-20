@@ -1,18 +1,28 @@
 "use strict";
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
 const isLocal = typeof process.pkg === "undefined";
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
 const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
 const chalk = require("chalk");
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'tezosConfi... Remove this comment to see the full error message
 const tezosConfig = require(path.join(basePath, "/Tezos/tezos_config.js"));
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jsonDir'.
 const jsonDir = `${basePath}/build/json`;
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'metadataBu... Remove this comment to see the full error message
 const metadataBuildPath = `${basePath}/build/tezos`;
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'metadataCo... Remove this comment to see the full error message
 const metadataConfigPath = `${basePath}/build/tezos`;
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'setup'.
 const setup = () => {
   if (fs.existsSync(metadataBuildPath)) {
     fs.rmSync(metadataBuildPath, {
@@ -23,10 +33,11 @@ const setup = () => {
   fs.mkdirSync(path.join(metadataBuildPath, "/json"));
 };
 
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'getIndivid... Remove this comment to see the full error message
 const getIndividualJsonFiles = () => {
   return fs
     .readdirSync(jsonDir)
-    .filter((item) => /^[0-9]{1,6}.json/g.test(item));
+    .filter((item: any) => /^[0-9]{1,6}.json/g.test(item));
 };
 
 setup();
@@ -36,13 +47,14 @@ console.log(
 );
 
 // Iterate, open and put in metadata list
+// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'jsonFiles'... Remove this comment to see the full error message
 const jsonFiles = getIndividualJsonFiles();
 
-const stringifySize = (obj) => {
+const stringifySize = (obj: any) => {
   return `${obj.width}x${obj.height}`;
 };
-const metadatas = [];
-jsonFiles.forEach((file) => {
+const metadatas: any = [];
+jsonFiles.forEach((file: any) => {
   let nameWithoutExtension = file.slice(0, -4);
   let editionCountFromFileName = Number(nameWithoutExtension);
 
@@ -50,7 +62,7 @@ jsonFiles.forEach((file) => {
   const jsonData = JSON.parse(rawData);
 
   const restructuredAttributes = jsonData.attributes.reduce(
-    (properties, attr) => {
+    (properties: any, attr: any) => {
       return [...properties, { name: attr.trait_type, value: attr.value }];
     },
     []

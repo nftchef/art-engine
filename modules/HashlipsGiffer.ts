@@ -1,8 +1,17 @@
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const GifEncoder = require("gif-encoder-2");
+// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const { writeFile } = require("fs");
 
 class HashLipsGiffer {
-  constructor(_canvas, _ctx, _fileName, _repeat, _quality, _delay) {
+  canvas: any;
+  ctx: any;
+  delay: any;
+  fileName: any;
+  gifEncoder: any;
+  quality: any;
+  repeat: any;
+  constructor(_canvas: any, _ctx: any, _fileName: any, _repeat: any, _quality: any, _delay: any) {
     this.canvas = _canvas;
     this.ctx = _ctx;
     this.fileName = _fileName;
@@ -30,9 +39,10 @@ class HashLipsGiffer {
   stop = () => {
     this.gifEncoder.finish();
     const buffer = this.gifEncoder.out.getData();
-    writeFile(this.fileName, buffer, (error) => {});
+    writeFile(this.fileName, buffer, (error: any) => {});
     console.log(`Created gif at ${this.fileName}`);
   };
 }
 
+// @ts-expect-error TS(2552): Cannot find name 'module'. Did you mean 'MODE'?
 module.exports = HashLipsGiffer;
