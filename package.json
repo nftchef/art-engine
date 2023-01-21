@@ -30,6 +30,7 @@
   "author": "Daniel Eugene Botha (HashLips), NFTChef",
   "license": "MIT",
   "dependencies": {
+    "@types/commander": "^2.12.2",
     "canvas": "^2.8.0",
     "chalk": "^4.1.2",
     "commander": "^8.2.0",
@@ -38,6 +39,10 @@
     "gif-encoder-2": "^1.0.5",
     "keccak256": "^1.0.3",
     "sharp": "^0.30.2",
-    "ts-migrate": "^0.1.35"
+    "ts-migrate": "^0.1.35",
+    "types": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18"
   }
 }

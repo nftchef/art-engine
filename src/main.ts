@@ -1,27 +1,12 @@
-// @ts-expect-error TS(6200): Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 "use strict";
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
-const path = require("path");
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
-const isLocal = typeof process.pkg === "undefined";
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
-const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'fs'.
-const fs = require("fs");
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const keccak256 = require("keccak256");
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'chalk'.
-const chalk = require("chalk");
+import path from "path";
+import fs from "fs";
+import keccak256 from "keccak256";
+import chalk from "chalk";
+import { createCanvas, loadImage } from "canvas";
 
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { createCanvas, loadImage } = require(path.join(
-  basePath,
-  "/node_modules/canvas"
-));
-
-console.log(path.join(basePath, "/src/config.js"));
-const {
+import {
   background,
   baseUri,
   buildDir,
@@ -43,17 +28,17 @@ const {
   traitValueOverrides,
   uniqueDnaTorrance,
   useRootTraitType,
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require(path.join(basePath, "/src/config.js"));
+  LayerAttribute
+} from "./config";
 const canvas = createCanvas(format.width, format.height);
 const ctxMain = canvas.getContext("2d");
 ctxMain.imageSmoothingEnabled = format.smoothing;
 
-let metadataList = [];
-let attributesList = [];
+let metadataList: Array<object> = [];
+let attributesList: Array<LayerAttribute> = [];
 
 // when generating a random background used to add to DNA
-let generatedBackground;
+let generatedBackground: string;
 
 let dnaList = new Set(); // internal+external: list of all files. used for regeneration etc
 let uniqueDNAList = new Set(); // internal: post-filtered dna set for bypassDNA etc.
@@ -61,8 +46,7 @@ const DNA_DELIMITER = "*";
 
 const zflag = /(z-?\d*,)/;
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'buildSetup... Remove this comment to see the full error message
-const buildSetup = () => {
+export const buildSetup = () => {
   if (fs.existsSync(buildDir)) {
     fs.rmdirSync(buildDir, { recursive: true });
   }
@@ -264,8 +248,7 @@ const getTraitValueFromPath = (element: any, lineage: any) => {
  * @param {String} trait The default trait value from the path-name
  * @returns String trait of either overridden value of raw default.
  */
-const processTraitOverrides = (trait: any) => {
-  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+const processTraitOverrides = (trait: string) => {
   return traitValueOverrides[trait] ? traitValueOverrides[trait] : trait;
 };
 
@@ -317,8 +300,8 @@ const addMetadata = (_dna: any, _edition: any, _prefixData: any) => {
   const { _prefix, _offset, _imageHash } = _prefixData;
 
   const combinedAttrs = [...attributesList, ...extraAttributes()];
-  const cleanedAttrs = combinedAttrs.reduce((acc, current) => {
-    const x = acc.find((item: any) => item.trait_type === current.trait_type);
+  const cleanedAttrs = combinedAttrs.reduce((acc: Array<LayerAttribute>, current: LayerAttribute) => {
+    const x = acc.find((item: LayerAttribute) => item.trait_type === current.trait_type);
     if (!x) {
       return acc.concat([current]);
     } else {
@@ -344,7 +327,7 @@ const addMetadata = (_dna: any, _edition: any, _prefixData: any) => {
 
 const addAttributes = (_element: any) => {
   let selectedElement = _element.layer;
-  const layerAttributes = {
+  const layerAttributes: LayerAttribute  = {
     trait_type: _element.layer.trait,
     value: selectedElement.traitValue,
     ...(_element.layer.display_type !== undefined && {
@@ -862,8 +845,7 @@ const outputFiles = (
   console.log(chalk.cyan(`Created edition: ${abstractedIndexes[0]}`));
 };
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'startCreat... Remove this comment to see the full error message
-const startCreating = async (storedDNA: any) => {
+export const startCreating = async (storedDNA: any) => {
   if (storedDNA) {
     console.log(`using stored dna of ${storedDNA.size}`);
     dnaList = storedDNA;
@@ -922,8 +904,9 @@ const startCreating = async (storedDNA: any) => {
             _background: background,
           };
           paintLayers(ctxMain, renderObjectArray, layerData);
-          // @ts-expect-error TS(2554): Expected 4 arguments, but got 2.
+          // Todo: layerData contained abstracedIndexes it doesn't neet to pass both
           outputFiles(abstractedIndexes, layerData);
+
         });
 
         // prepend the same output num (abstractedIndexes[0])
@@ -943,7 +926,6 @@ const startCreating = async (storedDNA: any) => {
           console.log(
             `You need more layers or elements to grow your edition to ${layerConfigurations[layerConfigIndex].growEditionSizeTo} artworks!`
           );
-          // @ts-expect-error TS(2580): Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
           process.exit();
         }
       }
@@ -952,27 +934,4 @@ const startCreating = async (storedDNA: any) => {
   }
   writeMetaData(JSON.stringify(metadataList, null, 2));
   writeDnaLog(JSON.stringify([...dnaList], null, 2));
-};
-
-// @ts-expect-error TS(2580): Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
-  addAttributes,
-  addMetadata,
-  buildSetup,
-  constructLayerToDna,
-  cleanName,
-  createDna,
-  DNA_DELIMITER,
-  getElements,
-  hash,
-  isDnaUnique,
-  layersSetup,
-  loadLayerImg,
-  outputFiles,
-  paintLayers,
-  parseQueryString,
-  postProcessMetadata,
-  sortZIndex,
-  startCreating,
-  writeMetaData,
 };

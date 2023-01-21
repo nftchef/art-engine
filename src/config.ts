@@ -1,49 +1,44 @@
-// @ts-expect-error TS(6200): Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 "use strict";
 
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'path'.
-const path = require("path");
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'isLocal'.
-const isLocal = typeof process.pkg === "undefined";
-// @ts-expect-error TS(2451): Cannot redeclare block-scoped variable 'basePath'.
-const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
-
+import path from "path";
+// const isLocal = typeof process.pkg === "undefined";
+// const basePath = isLocal ? process.cwd() : path.dirname(process.execPath);
+const basePath = process.cwd();
 // see src/blendMode.js for available blend modes
 // documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
-// @ts-expect-error TS(2580): Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { MODE } = require(path.join(basePath, "src/blendMode.js"));
+import { MODE } from "./blendMode";
 
-const buildDir = path.join(basePath, "/build");
-const layersDir = path.join(basePath, "/layers");
+export const buildDir = path.join(basePath, "/build");
+export const layersDir = path.join(basePath, "/layers");
 
 /*********************
  * General Generator Options
  ***********************/
 
-const description =
+export const description =
   "This is the description of your NFT project, remember to replace this";
-const baseUri = "ipfs://NewUriToReplace";
+export const baseUri = "ipfs://NewUriToReplace";
 
-const outputJPEG = false; // if false, the generator outputs png's
+export const outputJPEG = false; // if false, the generator outputs png's
 
 /**
  * Set your tokenID index start number.
  * ⚠️ Be sure it matches your smart contract!
  */
-const startIndex = 0;
+export const startIndex = 0;
 
-const format = {
+export const format = {
   width: 512,
   height: 512,
   smoothing: true, // set to false when up-scaling pixel art.
 };
 
-const background = {
+export const background = {
   generate: true,
   brightness: "80%",
 };
 
-const layerConfigurations = [
+export const layerConfigurations = [
   {
     growEditionSizeTo: 10,
     namePrefix: "Series 2", // Use to add a name to Metadata `name:`
@@ -79,16 +74,16 @@ const layerConfigurations = [
  * Set to true for when using multiple layersOrder configuration
  * and you would like to shuffle all the artwork together
  */
-const shuffleLayerConfigurations = false;
+export const shuffleLayerConfigurations = false;
 
-const debugLogs = true;
+export const debugLogs = true;
 
 /*********************
  * Advanced Generator Options
  ***********************/
 
 // if you use an empty/transparent file, set the name here.
-const emptyLayerName = "NONE";
+export const emptyLayerName = "NONE";
 
 /**
  * Incompatible items can be added to this object by a files cleanName
@@ -97,7 +92,7 @@ const emptyLayerName = "NONE";
  * The current version requires all layers to have unique names, or you may
  * accidentally set incompatibilities for the _wrong_ item.
  */
-const incompatible = {
+export const incompatible = {
   //   Red: ["Dark Long"],
   //   // directory incompatible with directory example
   //   White: ["rare-Pink-Pompadour"],
@@ -112,8 +107,12 @@ const incompatible = {
  * the items in the array are "required" items that should be pulled from folders
  * further in the stack
  */
-const forcedCombinations = {
+export const forcedCombinations = {
   // floral: ["MetallicShades", "Golden Sakura"],
+};
+
+export interface traitValueOverrides {
+  [key: string]: string
 };
 
 /**
@@ -121,14 +120,21 @@ const forcedCombinations = {
  * multiple items should have the same value, specify
  * clean-filename: trait-value override pairs. Wrap filenames with spaces in quotes.
  */
-const traitValueOverrides = {
+export const  traitValueOverrides: traitValueOverrides = {
   Helmet: "Space Helmet",
   "gold chain": "GOLDEN NECKLACE",
 };
 
-const extraMetadata = {};
+export const extraMetadata = {};
 
-const extraAttributes = () => [
+export type LayerAttribute = {
+  trait_type: string,
+  value: any,
+  display_type?: string,
+};
+
+
+export const extraAttributes = () => [
   // Optionally, if you need to overwrite one of your layers attributes.
   // You can include the same name as the layer, here, and it will overwrite
   //
@@ -154,58 +160,31 @@ const extraAttributes = () => [
 ];
 
 // Outputs an Keccack256 hash for the image. Required for provenance hash
-const hashImages = true;
+export const hashImages = true;
 
-const rarityDelimiter = "#";
+export const rarityDelimiter = "#";
 
-const uniqueDnaTorrance = 10000;
+export const uniqueDnaTorrance = 10000;
 
 /**
  * Set to true to always use the root folder as trait_type
  * Set to false to use weighted parent folders as trait_type
  * Default is true.
  */
-const useRootTraitType = true;
+export const useRootTraitType = true;
 
-const preview = {
+export const preview = {
   thumbPerRow: 5,
   thumbWidth: 50,
   imageRatio: format.width / format.height,
   imageName: "preview.png",
 };
 
-const preview_gif = {
+export const preview_gif = {
   numberOfImages: 5,
   order: "ASC", // ASC, DESC, MIXED
   repeat: 0,
   quality: 100,
   delay: 500,
   imageName: "preview.gif",
-};
-
-// @ts-expect-error TS(2552): Cannot find name 'module'. Did you mean 'MODE'?
-module.exports = {
-  background,
-  baseUri,
-  buildDir,
-  debugLogs,
-  description,
-  emptyLayerName,
-  extraAttributes,
-  extraMetadata,
-  forcedCombinations,
-  format,
-  hashImages,
-  incompatible,
-  layerConfigurations,
-  layersDir,
-  outputJPEG,
-  preview,
-  preview_gif,
-  rarityDelimiter,
-  shuffleLayerConfigurations,
-  startIndex,
-  traitValueOverrides,
-  uniqueDnaTorrance,
-  useRootTraitType,
 };
