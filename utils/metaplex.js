@@ -109,7 +109,7 @@ jsonFiles.forEach((file) => {
         },
       ],
       category: "image",
-      creators: creators,
+      // creators: creators, // The creators field is deprecated in the JSON metadata, it should be set in the config file instead.
       compiler: "HashLips Art Engine - NFTChef fork | qualifieddevs.io",
     },
   };
