@@ -15,8 +15,8 @@ const outputJPEG = false;
 const startIndex = 0;
 
 const format = {
-  width: 1024,
-  height: 1024,
+  width: 3000,
+  height: 3000,
   smoothing: true,
 };
 
